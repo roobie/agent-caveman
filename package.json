@@ -1,16 +1,16 @@
 {
   "name": "caveman-installer",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "Caveman installer \u2014 detects your AI coding agents and installs caveman for each one.",
   "license": "Apache-2.0",
   "author": "Julius Brussee",
-  "homepage": "https://github.com/JuliusBrussee/caveman",
+  "homepage": "https://github.com/roobie/agent-caveman",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JuliusBrussee/caveman.git"
+    "url": "git+https://github.com/roobie/agent-caveman.git"
   },
   "bugs": {
-    "url": "https://github.com/JuliusBrussee/caveman/issues"
+    "url": "https://github.com/roobie/agent-caveman/issues"
   },
   "bin": {
     "caveman-install": "./installer/install.js"

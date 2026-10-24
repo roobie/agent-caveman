@@ -57,7 +57,7 @@ One command. Skills land in every agent the `skills` tool knows. Needs Node.js 1
 
 Type `/caveman` (`$caveman` in Codex) if it doesn't start on its own. Say `stop caveman` to go back.
 
-Per-agent detail, hooks and troubleshooting: [INSTALL.md](./INSTALL.md). Its `npx -y github:...` one-liners and `installer/install.js` still fetch skills from the original repo, not this fork.
+Per-agent detail, hooks and troubleshooting: [INSTALL.md](./INSTALL.md).
 
 ## What you get
 

@@ -1,7 +1,7 @@
 # caveman — uninstaller for the SessionStart + SubagentStart + UserPromptSubmit + SessionEnd hooks (Windows PowerShell)
 # Removes: hook files in ~/.claude/hooks, settings.json entries, and the mode state
 # Usage: powershell -ExecutionPolicy Bypass -File src\hooks\uninstall.ps1
-#   or:  irm https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/hooks/uninstall.ps1 | iex
+#   or:  irm https://raw.githubusercontent.com/roobie/agent-caveman/main/src/hooks/uninstall.ps1 | iex
 param()
 
 $ErrorActionPreference = "Stop"
@@ -82,7 +82,7 @@ try {
 } catch (e) {
   console.error('  Cannot parse ' + settingsPath + ': ' + e.message);
   console.error('  Nothing was changed. If the file has // comments, run:');
-  console.error('    npx -y github:JuliusBrussee/caveman -- --uninstall');
+  console.error('    npx -y github:roobie/agent-caveman -- --uninstall');
   process.exit(3);
 }
 
@@ -243,6 +243,6 @@ Write-Host "Done! Restart Claude Code to complete the uninstall." -ForegroundCol
 # Guidance for other agents
 Write-Host ""
 Write-Host "Other agents:"
-Write-Host "  npx skills remove JuliusBrussee/caveman -g  # Cursor, Windsurf, Cline, Copilot, etc."
+Write-Host "  npx skills remove roobie/agent-caveman -g  # Cursor, Windsurf, Cline, Copilot, etc."
 Write-Host "  claude plugin disable caveman   # Claude Code plugin"
 Write-Host "  gemini extensions uninstall caveman  # Gemini CLI"

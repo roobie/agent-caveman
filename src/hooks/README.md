@@ -2,7 +2,7 @@
 
 These hooks are **bundled with the caveman plugin** and activate automatically when the plugin is installed. No manual setup required.
 
-If you installed caveman standalone (without the plugin), the unified Node installer at `installer/install.js` wires them into your `settings.json` for you — run `node installer/install.js --only claude` from a clone, or `npx -y github:JuliusBrussee/caveman -- --only claude` for the curl-pipe path.
+If you installed caveman standalone (without the plugin), the unified Node installer at `installer/install.js` wires them into your `settings.json` for you — run `node installer/install.js --only claude` from a clone, or `npx -y github:roobie/agent-caveman -- --only claude` for the curl-pipe path.
 
 ## What's Included
 
@@ -185,7 +185,7 @@ If installed via plugin: disable the plugin — hooks deactivate automatically.
 
 If installed via the standalone Node installer:
 ```bash
-npx -y github:JuliusBrussee/caveman -- --uninstall
+npx -y github:roobie/agent-caveman -- --uninstall
 # or, from a clone:
 node installer/install.js --uninstall
 ```

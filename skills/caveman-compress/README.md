@@ -212,7 +212,7 @@ equivalence.
 
 ## Part of Caveman
 
-This skill is part of the [caveman](https://github.com/JuliusBrussee/caveman) toolkit.
+This skill is part of the [caveman](https://github.com/roobie/agent-caveman) toolkit.
 
 - `caveman`: ask Claude to answer in shorter prose
 - `caveman-compress`: shorten supported project-memory files with backups and validation

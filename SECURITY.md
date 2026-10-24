@@ -22,7 +22,7 @@ These are policy targets for a small maintainer team, not a contractual SLA.
 
 Do not open a public issue for suspected arbitrary code execution, path escape,
 credential exposure, or similar security bugs. Use [GitHub private vulnerability
-reporting](https://github.com/JuliusBrussee/caveman/security/advisories/new).
+reporting](https://github.com/roobie/agent-caveman/security/advisories/new).
 
 ## Data-flow summary
 

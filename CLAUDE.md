@@ -144,7 +144,7 @@ twin. Guarded by `tests/verify_repo.py`.
 
 ### Auto-generated / auto-synced — do not edit directly
 
-We removed the agent-specific dotdir mirrors at the repo root (`.cursor/`, `.windsurf/`, `.clinerules/`, `.github/copilot-instructions.md`, root `caveman/SKILL.md`). They were never read by the installer — only used to self-apply caveman to this repo when a maintainer opened it in Cursor/Windsurf/Cline. Devs who want caveman in their editor while editing this repo should run `npx -y github:JuliusBrussee/caveman -- --with-init` once (writes per-repo rule files from `src/rules/caveman-activate.md` via `src/tools/caveman-init.js`). For per-user installs through the upstream skills CLI, `npx -y github:JuliusBrussee/caveman -- --only <agent>` runs `npx skills add ... -a <profile>`.
+We removed the agent-specific dotdir mirrors at the repo root (`.cursor/`, `.windsurf/`, `.clinerules/`, `.github/copilot-instructions.md`, root `caveman/SKILL.md`). They were never read by the installer — only used to self-apply caveman to this repo when a maintainer opened it in Cursor/Windsurf/Cline. Devs who want caveman in their editor while editing this repo should run `npx -y github:roobie/agent-caveman -- --with-init` once (writes per-repo rule files from `src/rules/caveman-activate.md` via `src/tools/caveman-init.js`). For per-user installs through the upstream skills CLI, `npx -y github:roobie/agent-caveman -- --only <agent>` runs `npx skills add ... -a <profile>`.
 
 A handful of dotdir leftovers (`.junie/`, `.kiro/`, `.roo/`, `.agents/`) still hold a stale `cavecrew/SKILL.md` mirror from before the cleanup. They aren't read by anything in the current install path; remove on sight, no migration needed.
 
@@ -282,9 +282,9 @@ Configured in `settings.json` under `statusLine.command`. PowerShell counterpart
 
 **Standalone install** — `installer/install.js` (the unified Node installer) copies hook files into `$CLAUDE_CONFIG_DIR/hooks/` and merges SessionStart + SubagentStart + UserPromptSubmit + statusline into `settings.json`. Uses the JSONC-tolerant helpers in `installer/lib/settings.js` so a commented `settings.json` no longer crashes the merge. Defensive `validateHookFields` runs before every write to prevent a single malformed hook from poisoning the entire file (Claude Code Zod silently discards the whole `settings.json` on schema mismatch).
 
-The `install.sh` / `install.ps1` shims at the repo root delegate to `installer/install.js` via `node` (local clone) or `npx -y github:JuliusBrussee/caveman` (curl|bash). No legacy fallback path remains — earlier `install.sh.legacy` / `install.ps1.legacy` files were removed.
+The `install.sh` / `install.ps1` shims at the repo root delegate to `installer/install.js` via `node` (local clone) or `npx -y github:roobie/agent-caveman` (curl|bash). No legacy fallback path remains — earlier `install.sh.legacy` / `install.ps1.legacy` files were removed.
 
-**Uninstall** — `npx -y github:JuliusBrussee/caveman -- --uninstall` (or `node installer/install.js --uninstall` from a clone). Strips caveman hook entries from `settings.json` via substring marker `caveman`, deletes hook files, and removes the Claude plugin / Gemini extension. Native skill copies use `installer/lib/provider-skills.js` and ownership journals; uninstall removes unchanged owned files while preserving foreign or edited content. Use the same vendor home overrides for install and uninstall. Delegated `npx skills add` installs remain managed by the host/upstream skill manager.
+**Uninstall** — `npx -y github:roobie/agent-caveman -- --uninstall` (or `node installer/install.js --uninstall` from a clone). Strips caveman hook entries from `settings.json` via substring marker `caveman`, deletes hook files, and removes the Claude plugin / Gemini extension. Native skill copies use `installer/lib/provider-skills.js` and ownership journals; uninstall removes unchanged owned files while preserving foreign or edited content. Use the same vendor home overrides for install and uninstall. Delegated `npx skills add` installs remain managed by the host/upstream skill manager.
 
 ---
 

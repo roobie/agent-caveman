@@ -4,7 +4,7 @@
 # you'd pass to installer/install.js can be passed here; we just forward them.
 #
 # One-line install:
-#   irm https://raw.githubusercontent.com/JuliusBrussee/caveman/v4.0.1/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.ps1 | iex
 #
 # Local clone:
 #   pwsh install.ps1 [flags]
@@ -27,8 +27,8 @@ function Install-Caveman {
   )
 
   $ErrorActionPreference = "Stop"
-  $Repo = "JuliusBrussee/caveman"
-  $PinnedRef = if ($env:CAVEMAN_REF) { $env:CAVEMAN_REF } else { "v4.0.1" }
+  $Repo = "roobie/agent-caveman"
+  $PinnedRef = if ($env:CAVEMAN_REF) { $env:CAVEMAN_REF } else { "v5.0.0" }
 
   # Require Node ≥18.
   $node = Get-Command node -ErrorAction SilentlyContinue

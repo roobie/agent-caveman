@@ -15,21 +15,21 @@ hooks and a statusline.
 Run installer directly from GitHub:
 
 ```bash
-npx -y github:JuliusBrussee/caveman
+npx -y github:roobie/agent-caveman
 ```
 
 It detects installed agents and installs only matching integrations. List every
 known target:
 
 ```bash
-npx -y github:JuliusBrussee/caveman -- --list
+npx -y github:roobie/agent-caveman -- --list
 ```
 
 Install one target:
 
 ```bash
-npx -y github:JuliusBrussee/caveman -- --only claude
-npx -y github:JuliusBrussee/caveman -- --only codex
+npx -y github:roobie/agent-caveman -- --only claude
+npx -y github:roobie/agent-caveman -- --only codex
 ```
 
 Claude Code uses its plugin system, while Gemini CLI uses its extension system.
@@ -59,7 +59,7 @@ GitHub installer is idempotent for installer-owned files.
 ## Uninstall
 
 ```bash
-npx -y github:JuliusBrussee/caveman -- --uninstall
+npx -y github:roobie/agent-caveman -- --uninstall
 ```
 
 ## Windows notes

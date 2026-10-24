@@ -9,16 +9,16 @@ If just want it to work, run the one-liner. If want to know what gets touched, s
 **macOS / Linux / WSL / Git Bash**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/v4.0.1/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.sh | bash
 ```
 
 **Windows (PowerShell 5.1+)**
 
 ```powershell
-irm https://raw.githubusercontent.com/JuliusBrussee/caveman/v4.0.1/install.ps1 | iex
+irm https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.ps1 | iex
 ```
 
-> Piping a script straight into a shell runs it sight-unseen. If you'd rather read it first, download then run: `curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/v4.0.1/install.sh -o install.sh` (review it) `&& bash install.sh`. Bootstrap, package, skill, and hook downloads stay pinned to that release tag, never the moving `main` branch. Hook files are checked against a SHA-256 list from the same tag: that catches a broken or partial download, not a tag that was moved. If that list can't be fetched or any file fails it, no hook is installed and your settings stay as they were. Runtime binaries are checked against a checksum list signed with a key built into the CLI. Set `CAVEMAN_REF` only when intentionally testing another ref.
+> Piping a script straight into a shell runs it sight-unseen. If you'd rather read it first, download then run: `curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.sh -o install.sh` (review it) `&& bash install.sh`. Bootstrap, package, skill, and hook downloads stay pinned to that release tag, never the moving `main` branch. Hook files are checked against a SHA-256 list from the same tag: that catches a broken or partial download, not a tag that was moved. If that list can't be fetched or any file fails it, no hook is installed and your settings stay as they were. Runtime binaries are checked against a checksum list signed with a key built into the CLI. Set `CAVEMAN_REF` only when intentionally testing another ref.
 
 What it does:
 
@@ -30,66 +30,66 @@ What it does:
 Want to preview before installing? Use `--dry-run`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/v4.0.1/install.sh | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.sh | bash -s -- --dry-run
 ```
 
 ## Per-agent install
 
 If you want to install for one agent (or want to know exactly what command runs under the hood), use the table below. Every row also works as `--only <id>` to the unified installer.
 
-> **On npm 12 or newer, add `--allow-git=root` to any bare `npx -y github:...` command below.** npm 12 turns off git package fetches by default, so a plain `npx -y github:JuliusBrussee/caveman` stops with `npm error code EALLOWGIT`. The flag opts in just the one package you asked for: `npx --allow-git=root -y github:JuliusBrussee/caveman -- --only <id>`. Check with `npx --version`. `install.sh` and `install.ps1` detect the npm major and add the flag themselves starting with `v3.2.0`, so the one-liners above (pinned to `v4.0.1`) work on npm 12. **One-liners pinned to `v3.1.0` or older download shims that predate that change and keep failing on npm 12**: switch the tag to `v4.0.1`, or install with the flag directly: `npx --allow-git=root -y github:JuliusBrussee/caveman#v4.0.1 -- --only <id>`.
+> **On npm 12 or newer, add `--allow-git=root` to any bare `npx -y github:...` command below.** npm 12 turns off git package fetches by default, so a plain `npx -y github:roobie/agent-caveman` stops with `npm error code EALLOWGIT`. The flag opts in just the one package you asked for: `npx --allow-git=root -y github:roobie/agent-caveman -- --only <id>`. Check with `npx --version`. `install.sh` and `install.ps1` detect the npm major and add the flag themselves starting with `v3.2.0`, so the one-liners above (pinned to `v5.0.0`) work on npm 12. **One-liners pinned to `v3.1.0` or older download shims that predate that change and keep failing on npm 12**: switch the tag to `v5.0.0`, or install with the flag directly: `npx --allow-git=root -y github:roobie/agent-caveman#v5.0.0 -- --only <id>`.
 
 > **Choose the install scope your agent reads.** `-g` installs into the agent's user skill directory. Without it, skills belong to the current project. The unified installer uses user scope except for Replit, whose documented filesystem location is the project's `.agents/skills`. Run Replit's command from that project's Shell. Replit workspace-wide skills are managed in Workspace Settings.
 
 | Agent | Install command | Auto-activates? |
 |---|---|:-:|
-| **Claude Code** | `claude plugin marketplace add JuliusBrussee/caveman && claude plugin install caveman@caveman` | Yes |
-| **Gemini CLI** | `gemini extensions install https://github.com/JuliusBrussee/caveman` | Yes |
-| **opencode** | `node installer/install.js --only opencode` *(or `npx -y github:JuliusBrussee/caveman -- --only opencode`)* | Yes (plugin + AGENTS.md) |
-| **Oh My Pi (OMP)** | `npx -y github:JuliusBrussee/caveman -- --only omp` *(or `node installer/install.js --only omp` from a clone)* | Yes (native OMP plugin) |
-| **OpenClaw** | `npx -y github:JuliusBrussee/caveman -- --only openclaw` | Yes (workspace skill + SOUL.md) |
-| **Hermes Agent** | `npx -y github:JuliusBrussee/caveman -- --only hermes` *(or `node installer/install.js --only hermes` from a clone)* | Yes (native skills, enabled on load) |
-| **Antigravity CLI** (`agy`) | `npx -y github:JuliusBrussee/caveman -- --only antigravity-cli` | Yes ([agy plugin](#antigravity-cli)) |
-| **Codex CLI** | `npx -y github:JuliusBrussee/caveman -- --only codex` *(skills only, no hook: `npx skills add JuliusBrussee/caveman -a codex -g`)* | Yes (SessionStart hook — trust it once with `/hooks`); skills-only: `$caveman` (Codex calls skills with `$`, not `/`) |
-| **Cursor** | `npx -y github:JuliusBrussee/caveman -- --only cursor` *(or the [Cursor plugin](#cursor))* | Yes (session hook) |
-| **Windsurf** | `npx skills add JuliusBrussee/caveman -a windsurf -g` | Per-session by default; `--with-init` for an always-on rule file |
-| **Cline** | `npx skills add JuliusBrussee/caveman -a cline -g` | Per-session by default; `--with-init` for an always-on rule file |
-| **GitHub Copilot** | `npx -y github:JuliusBrussee/caveman -- --only copilot --with-init` | Copilot CLI: Yes (session hook). VS Code: repo-wide instructions via `--with-init` |
-| **Continue** | `npx -y github:JuliusBrussee/caveman -- --only continue` | No — invoke the Caveman skill |
-| **Kilo Code** | `npx skills add JuliusBrussee/caveman -a kilo -g` | No |
-| **Roo Code** | `npx skills add JuliusBrussee/caveman -a roo -g` | No |
-| **Augment Code** | `npx skills add JuliusBrussee/caveman -a augment -g` | No |
-| **AiderDesk** | `npx -y github:JuliusBrussee/caveman -- --only aider-desk` | No — enable Skills Tools |
-| **Sourcegraph Amp** | `npx skills add JuliusBrussee/caveman -a amp -g` | No |
-| **IBM Bob** | `npx skills add JuliusBrussee/caveman -a bob -g` | No |
-| **CodeBuddy Code** | `npx skills add JuliusBrussee/caveman -a codebuddy -g` | No |
-| **Crush** | `npx -y github:JuliusBrussee/caveman -- --only crush` | No |
-| **Devin (terminal)** | `npx skills add JuliusBrussee/caveman -a devin -g` | No |
-| **Droid (Factory)** | `npx skills add JuliusBrussee/caveman -a droid -g` | No |
-| **ForgeCode** | `npx skills add JuliusBrussee/caveman -a forgecode -g` | No |
-| **Block Goose** | `npx skills add JuliusBrussee/caveman -a goose -g` | No |
-| **Grok Build** | `npx -y github:JuliusBrussee/caveman -- --only grok` | Yes, per xAI docs (`~/.grok/AGENTS.md` block; not yet tested live) |
-| **iFlow CLI** | `npx -y github:JuliusBrussee/caveman -- --only iflow` | No |
-| **Kiro (IDE + CLI)** | `npx skills add JuliusBrussee/caveman -a kiro-cli -g` | No ([always-on steering](#kiro-ide-and-cli)) |
-| **Mistral Vibe** | `npx skills add JuliusBrussee/caveman -a mistral-vibe -g` | No |
-| **OpenHands** | `npx skills add JuliusBrussee/caveman -a openhands -g` | No |
-| **Qwen Code** | `npx skills add JuliusBrussee/caveman -a qwen-code -g` | No |
-| **Atlassian Rovo Dev** | `npx skills add JuliusBrussee/caveman -a rovodev -g` | No |
-| **Tabnine CLI** | `npx skills add JuliusBrussee/caveman -a tabnine-cli -g` | No |
-| **Trae** | `npx skills add JuliusBrussee/caveman -a trae -g` | No |
-| **Warp** | `npx skills add JuliusBrussee/caveman -a warp -g` | No |
-| **Replit Agent** | From the project Shell: `npx skills add JuliusBrussee/caveman -a replit` | No |
-| **JetBrains Junie** *(soft probe)* | `npx skills add JuliusBrussee/caveman -a junie -g` | No |
-| **Qoder** *(soft probe)* | `npx skills add JuliusBrussee/caveman -a qoder -g` | No |
-| **Antigravity IDE** *(soft probe)* | `npx -y github:JuliusBrussee/caveman -- --only antigravity` | No |
-| **Antigravity 2.0** *(explicit selection)* | `npx -y github:JuliusBrussee/caveman -- --only antigravity-2` | No |
+| **Claude Code** | `claude plugin marketplace add roobie/agent-caveman && claude plugin install caveman@caveman` | Yes |
+| **Gemini CLI** | `gemini extensions install https://github.com/roobie/agent-caveman` | Yes |
+| **opencode** | `node installer/install.js --only opencode` *(or `npx -y github:roobie/agent-caveman -- --only opencode`)* | Yes (plugin + AGENTS.md) |
+| **Oh My Pi (OMP)** | `npx -y github:roobie/agent-caveman -- --only omp` *(or `node installer/install.js --only omp` from a clone)* | Yes (native OMP plugin) |
+| **OpenClaw** | `npx -y github:roobie/agent-caveman -- --only openclaw` | Yes (workspace skill + SOUL.md) |
+| **Hermes Agent** | `npx -y github:roobie/agent-caveman -- --only hermes` *(or `node installer/install.js --only hermes` from a clone)* | Yes (native skills, enabled on load) |
+| **Antigravity CLI** (`agy`) | `npx -y github:roobie/agent-caveman -- --only antigravity-cli` | Yes ([agy plugin](#antigravity-cli)) |
+| **Codex CLI** | `npx -y github:roobie/agent-caveman -- --only codex` *(skills only, no hook: `npx skills add roobie/agent-caveman -a codex -g`)* | Yes (SessionStart hook — trust it once with `/hooks`); skills-only: `$caveman` (Codex calls skills with `$`, not `/`) |
+| **Cursor** | `npx -y github:roobie/agent-caveman -- --only cursor` *(or the [Cursor plugin](#cursor))* | Yes (session hook) |
+| **Windsurf** | `npx skills add roobie/agent-caveman -a windsurf -g` | Per-session by default; `--with-init` for an always-on rule file |
+| **Cline** | `npx skills add roobie/agent-caveman -a cline -g` | Per-session by default; `--with-init` for an always-on rule file |
+| **GitHub Copilot** | `npx -y github:roobie/agent-caveman -- --only copilot --with-init` | Copilot CLI: Yes (session hook). VS Code: repo-wide instructions via `--with-init` |
+| **Continue** | `npx -y github:roobie/agent-caveman -- --only continue` | No — invoke the Caveman skill |
+| **Kilo Code** | `npx skills add roobie/agent-caveman -a kilo -g` | No |
+| **Roo Code** | `npx skills add roobie/agent-caveman -a roo -g` | No |
+| **Augment Code** | `npx skills add roobie/agent-caveman -a augment -g` | No |
+| **AiderDesk** | `npx -y github:roobie/agent-caveman -- --only aider-desk` | No — enable Skills Tools |
+| **Sourcegraph Amp** | `npx skills add roobie/agent-caveman -a amp -g` | No |
+| **IBM Bob** | `npx skills add roobie/agent-caveman -a bob -g` | No |
+| **CodeBuddy Code** | `npx skills add roobie/agent-caveman -a codebuddy -g` | No |
+| **Crush** | `npx -y github:roobie/agent-caveman -- --only crush` | No |
+| **Devin (terminal)** | `npx skills add roobie/agent-caveman -a devin -g` | No |
+| **Droid (Factory)** | `npx skills add roobie/agent-caveman -a droid -g` | No |
+| **ForgeCode** | `npx skills add roobie/agent-caveman -a forgecode -g` | No |
+| **Block Goose** | `npx skills add roobie/agent-caveman -a goose -g` | No |
+| **Grok Build** | `npx -y github:roobie/agent-caveman -- --only grok` | Yes, per xAI docs (`~/.grok/AGENTS.md` block; not yet tested live) |
+| **iFlow CLI** | `npx -y github:roobie/agent-caveman -- --only iflow` | No |
+| **Kiro (IDE + CLI)** | `npx skills add roobie/agent-caveman -a kiro-cli -g` | No ([always-on steering](#kiro-ide-and-cli)) |
+| **Mistral Vibe** | `npx skills add roobie/agent-caveman -a mistral-vibe -g` | No |
+| **OpenHands** | `npx skills add roobie/agent-caveman -a openhands -g` | No |
+| **Qwen Code** | `npx skills add roobie/agent-caveman -a qwen-code -g` | No |
+| **Atlassian Rovo Dev** | `npx skills add roobie/agent-caveman -a rovodev -g` | No |
+| **Tabnine CLI** | `npx skills add roobie/agent-caveman -a tabnine-cli -g` | No |
+| **Trae** | `npx skills add roobie/agent-caveman -a trae -g` | No |
+| **Warp** | `npx skills add roobie/agent-caveman -a warp -g` | No |
+| **Replit Agent** | From the project Shell: `npx skills add roobie/agent-caveman -a replit` | No |
+| **JetBrains Junie** *(soft probe)* | `npx skills add roobie/agent-caveman -a junie -g` | No |
+| **Qoder** *(soft probe)* | `npx skills add roobie/agent-caveman -a qoder -g` | No |
+| **Antigravity IDE** *(soft probe)* | `npx -y github:roobie/agent-caveman -- --only antigravity` | No |
+| **Antigravity 2.0** *(explicit selection)* | `npx -y github:roobie/agent-caveman -- --only antigravity-2` | No |
 
 Not in the table, with their own steps below: [Claude apps (claude.ai, desktop, mobile, Cowork)](#claude-apps-claudeai-desktop-mobile-cowork), [GitHub Copilot in VS Code](#github-copilot-in-vs-code-agent-plugin), [nanocoder](#nanocoder), and [dev containers](#dev-containers-codespaces-remote-machines).
 
 Already inside a Claude Code session? The same Claude Code install as slash commands:
 
 ```text
-/plugin marketplace add JuliusBrussee/caveman
+/plugin marketplace add roobie/agent-caveman
 /plugin install caveman@caveman
 ```
 
@@ -107,8 +107,7 @@ Scripted Claude Code runs (`claude -p` and the Agent SDK) start with caveman off
 - **opencode**: subagents get the always-on caveman rules from `AGENTS.md` (checked on opencode 2.0.22). Those rules are fixed text, so "stop caveman" does not switch them off for subagents.
 - **Hermes Agent**: not verified. If a delegated task comes back wordy, ask for the caveman skill in that task.
 
-Continue needs physical skill directories because its current loader skips per-skill symlinks. The unified installer copies into `CONTINUE_GLOBAL_DIR/skills` (default `~/.continue/skills`) and follows AiderDesk's `AIDER_DESK_HOME_DIR` / `AIDER_DESK_DIR` overrides. It also honors `IFLOW_HOME`, Crush's exact `CRUSH_SKILLS_DIR`, and `GROK_HOME` (Grok Build reads `GROK_HOME/skills`, default `~/.grok/skills`). For Grok Build it also adds a marker-fenced caveman ruleset block to `GROK_HOME/AGENTS.md`, the global rules file Grok loads every session according to xAI's docs (we have not tested this against a real Grok binary yet); your own text in that file stays. Use the same environment when uninstalling — for a relative override, that means the same working directory too, since the path resolves against `cwd`. Existing unowned skill directories or symlinks produce a conflict rather than being silently replaced. See the [vendor discovery matrix](docs/technical/installer-provider-discovery.md) for sources and product limits.
-
+Continue needs physical skill directories because its current loader skips per-skill symlinks. The unified installer copies into `CONTINUE_GLOBAL_DIR/skills` (default `~/.continue/skills`) and follows AiderDesk's `AIDER_DESK_HOME_DIR` / `AIDER_DESK_DIR` overrides. It also honors `IFLOW_HOME`, Crush's exact `CRUSH_SKILLS_DIR`, and `GROK_HOME` (Grok Build reads `GROK_HOME/skills`, default `~/.grok/skills`). For Grok Build it also adds a marker-fenced caveman ruleset block to `GROK_HOME/AGENTS.md`, the global rules file Grok loads every session according to xAI's docs (we have not tested this against a real Grok binary yet); your own text in that file stays. Use the same environment when uninstalling — for a relative override, that means the same working directory too, since the path resolves against `cwd`. Existing unowned skill directories or symlinks produce a conflict rather than being silently replaced.
 Antigravity IDE reads `~/.gemini/antigravity/skills`; Antigravity 2.0 reads `~/.gemini/config/skills`. Select the matching product. Each command copies only into that product's directory.
 
 **Finding a profile slug for `npx skills add ... -a <profile>`?** Either read the table above, or print the live matrix from the installer:
@@ -119,14 +118,14 @@ Antigravity IDE reads `~/.gemini/antigravity/skills`; Antigravity 2.0 reads `~/.
 bash install.sh --list             # macOS / Linux / WSL, from a local clone
 pwsh install.ps1 --list            # Windows / PowerShell, from a local clone
 node installer/install.js --list         # any platform, from a local clone
-npx -y github:JuliusBrussee/caveman -- --list   # no clone needed
+npx -y github:roobie/agent-caveman -- --list   # no clone needed
 ```
 
 Each row prints the agent id, profile slug (where applicable), and whether it was auto-detected on your machine. Full agent matrix (with detection rules) is also defined in `installer/install.js` under the `PROVIDERS` array.
 
 ### Codex
 
-With `codex` on your PATH, `npx -y github:JuliusBrussee/caveman -- --only codex`
+With `codex` on your PATH, `npx -y github:roobie/agent-caveman -- --only codex`
 installs the skills and a small start-of-session hook. Every new Codex session
 (and every `/clear` or context compaction) then starts in caveman, following
 your configured default mode — including `off`. Codex asks you to review new hooks: run `/hooks` once in
@@ -164,7 +163,7 @@ rerun the install, or uninstall. Failed deregistration retains those files too.
 
 Two ways in. Pick one: with both, every chat gets the rules twice.
 
-- **Installer.** `npx -y github:JuliusBrussee/caveman -- --only cursor` adds
+- **Installer.** `npx -y github:roobie/agent-caveman -- --only cursor` adds
   the skills, the Cavecrew agents (`~/.cursor/agents/`) and a session hook
   (`~/.cursor/hooks.json` plus `~/.cursor/caveman/`). The Cursor editor, the
   Agents Window and `cursor-agent` all read these. `--no-hooks` installs the
@@ -222,7 +221,7 @@ good with `agy plugin disable caveman` (`enable` turns it back on).
 Nothing to install on your phone or inside Cowork. Add caveman to your Claude account once, from a browser or the desktop app, and it follows the account:
 
 1. On [claude.ai](https://claude.ai) or in the Claude desktop app, open **Customize > Plugins**.
-2. Pick **Add > Add marketplace** and enter `JuliusBrussee/caveman`.
+2. Pick **Add > Add marketplace** and enter `roobie/agent-caveman`.
 3. Add **Caveman** from that marketplace.
 4. Turn on **Settings > Capabilities > Code execution and file creation**. Claude's skills need it.
 
@@ -234,28 +233,28 @@ Then:
 
 Why a command-line install didn't show up: plugins installed from the Claude Code command line stay on that one machine and never reach your Claude account, so the apps and Cowork can't see them.
 
-> Steps follow Claude's [plugin docs](https://claude.com/docs/plugins/overview). We have not yet checked them end to end on a real account: the marketplace add from this repo, the skill appearing on Android, and whether caveman's auto-start runs in Cowork. If a step differs for you, [open an issue](https://github.com/JuliusBrussee/caveman/issues).
+> Steps follow Claude's [plugin docs](https://claude.com/docs/plugins/overview). We have not yet checked them end to end on a real account: the marketplace add from this repo, the skill appearing on Android, and whether caveman's auto-start runs in Cowork. If a step differs for you, [open an issue](https://github.com/roobie/agent-caveman/issues).
 
 ### GitHub Copilot in VS Code (agent plugin)
 
 VS Code can install plugins in Claude's format, and this repo is one.
 
 1. Turn on agent plugins with the `chat.plugins.enabled` setting.
-2. Open the Command Palette, run **Chat: Install Plugin From Source**, and paste `https://github.com/JuliusBrussee/caveman`.
+2. Open the Command Palette, run **Chat: Install Plugin From Source**, and paste `https://github.com/roobie/agent-caveman`.
 3. In Copilot Chat, pick `caveman` from the `/` menu or say "caveman mode".
 
-Expect skills only, and no auto-start: VS Code reads a Claude plugin's hooks from a file caveman does not ship. We have not tested this path yet. For caveman on every Copilot reply in one repo, run `npx -y github:JuliusBrussee/caveman -- --only copilot --with-init` at the repo root. It writes Copilot's rule file, `.github/copilot-instructions.md`, and also adds rule files for Cursor, Windsurf, Cline and `AGENTS.md`.
+Expect skills only, and no auto-start: VS Code reads a Claude plugin's hooks from a file caveman does not ship. We have not tested this path yet. For caveman on every Copilot reply in one repo, run `npx -y github:roobie/agent-caveman -- --only copilot --with-init` at the repo root. It writes Copilot's rule file, `.github/copilot-instructions.md`, and also adds rule files for Cursor, Windsurf, Cline and `AGENTS.md`.
 
 ### Kiro (IDE and CLI)
 
-`npx skills add JuliusBrussee/caveman -a kiro-cli -g` puts caveman in `~/.kiro/skills/`. Kiro IDE and kiro-cli both load skills from there, so one install covers both. Say "caveman mode" to start it.
+`npx skills add roobie/agent-caveman -a kiro-cli -g` puts caveman in `~/.kiro/skills/`. Kiro IDE and kiro-cli both load skills from there, so one install covers both. Say "caveman mode" to start it.
 
 Want it on for every Kiro chat? Add a global steering file with `inclusion: always`:
 
 ```bash
 mkdir -p ~/.kiro/steering
 printf '%s\n' '---' 'inclusion: always' '---' '' > ~/.kiro/steering/caveman.md
-curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/rules/caveman-activate.md >> ~/.kiro/steering/caveman.md
+curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/main/src/rules/caveman-activate.md >> ~/.kiro/steering/caveman.md
 ```
 
 The steering format comes from [Kiro's docs](https://kiro.dev/docs/steering/); we have not tested it in Kiro ourselves. Delete the file to turn it off.
@@ -265,10 +264,10 @@ The steering format comes from [Kiro's docs](https://kiro.dev/docs/steering/); w
 No native install. nanocoder reads the `AGENTS.md` at your project root into its system prompt (its `nano` profile leaves it out unless you turn on **Include AGENTS.md**). Put caveman's always-on rule there, once per repo:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/rules/caveman-activate.md >> AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/main/src/rules/caveman-activate.md >> AGENTS.md
 ```
 
-Run it once; a second run adds a second copy. `npx -y github:JuliusBrussee/caveman -- --with-init` is safe to re-run and writes the same rule into `AGENTS.md`, but it also installs caveman into every other agent it finds on your machine and adds rule files for Cursor, Windsurf, Cline and Copilot. Not tested in nanocoder by us yet.
+Run it once; a second run adds a second copy. `npx -y github:roobie/agent-caveman -- --with-init` is safe to re-run and writes the same rule into `AGENTS.md`, but it also installs caveman into every other agent it finds on your machine and adds rule files for Cursor, Windsurf, Cline and Copilot. Not tested in nanocoder by us yet.
 
 ### Dev containers, Codespaces, remote machines
 
@@ -277,14 +276,14 @@ A dev container has its own home folder. Caveman installed on your laptop (`~/.c
 1. **Ship caveman with the repo.** At the repo root, run the skills install *without* `-g`, then commit the folder it creates. Every container and teammate gets caveman. For Codex:
 
    ```bash
-   npx skills add JuliusBrussee/caveman -a codex --copy
+   npx skills add roobie/agent-caveman -a codex --copy
    ```
 
    Codex reads project skills from `.agents/skills/`. Skill files copied anywhere else are not found.
 2. **Install when the container is built.** In `.devcontainer/devcontainer.json` (the image needs Node.js):
 
    ```json
-   "postCreateCommand": "npx -y skills add JuliusBrussee/caveman --skill '*' -a codex -g -y"
+   "postCreateCommand": "npx -y skills add roobie/agent-caveman --skill '*' -a codex -g -y"
    ```
 
 Swap `codex` for your agent's profile from the table above. Claude Code inside a container needs its own install too: run the Claude Code plugin commands, or the installer, inside the container.
@@ -295,7 +294,7 @@ If you'd rather see exactly what runs:
 
 ```bash
 # Clone the repo
-git clone https://github.com/JuliusBrussee/caveman.git
+git clone https://github.com/roobie/agent-caveman.git
 cd caveman
 
 # Preview every command the installer would run
@@ -335,7 +334,7 @@ For agents without a hook system (Windsurf, Cline, Copilot in VS Code, and frien
 node installer/install.js --with-init
 
 # Or pull the rule body straight in (manual)
-curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/rules/caveman-activate.md \
+curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/main/src/rules/caveman-activate.md \
   > .cursor/rules/caveman.mdc   # or .windsurf/rules/caveman.md, .clinerules/caveman.md, .github/copilot-instructions.md
 ```
 
@@ -404,13 +403,13 @@ update — hooks are read once at session start.
 
 ```bash
 # Re-run the installer (safe to repeat — overwrites only installer-owned files)
-npx -y github:JuliusBrussee/caveman
+npx -y github:roobie/agent-caveman
 ```
 
 ## Uninstall
 
 ```bash
-npx -y github:JuliusBrussee/caveman -- --uninstall
+npx -y github:roobie/agent-caveman -- --uninstall
 ```
 
 What it removes:
@@ -430,7 +429,7 @@ What it removes:
 
 What it does **not** remove:
 
-- Skills installed via `npx skills add` — the `skills` CLI manages those. Remove them with `npx skills remove JuliusBrussee/caveman -g`. It lists the skills and asks before deleting. It clears those names from every agent's folder, so if you keep a skill of your own with one of them (such as `migration`), add `-a <agent>` with the name after `-a` in that agent's row above to limit it. Replit: run it inside the project, without `-g`.
+- Skills installed via `npx skills add` — the `skills` CLI manages those. Remove them with `npx skills remove roobie/agent-caveman -g`. It lists the skills and asks before deleting. It clears those names from every agent's folder, so if you keep a skill of your own with one of them (such as `migration`), add `-a <agent>` with the name after `-a` in that agent's row above to limit it. Replit: run it inside the project, without `-g`.
 - Per-repo rule files written by `--with-init` (`.cursor/rules/`, `.windsurf/rules/`, `.clinerules/`, `.github/copilot-instructions.md`, `.opencode/AGENTS.md`, `AGENTS.md`). Delete by hand if you want.
 
 ## Troubleshooting
@@ -443,7 +442,7 @@ Open your agent in this repo and say:
 
 Agent read repo. Agent run install. Caveman make agent talk less — agent first job is install caveman to talk less. Snake eat tail.
 
-Still broken? [Open an issue](https://github.com/JuliusBrussee/caveman/issues).
+Still broken? [Open an issue](https://github.com/roobie/agent-caveman/issues).
 
 **"I ran the installer but Claude Code isn't talking caveman."**
 
@@ -526,4 +525,4 @@ After install, skills and hooks stay local. Full data-flow statement: [SECURITY.
 
 ---
 
-Stuck? Open an issue: <https://github.com/JuliusBrussee/caveman/issues>
+Stuck? Open an issue: <https://github.com/roobie/agent-caveman/issues>

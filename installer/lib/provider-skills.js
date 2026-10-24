@@ -5,7 +5,7 @@ const os = require('os');
 const path = require('path');
 const OWNED = require('./owned-install');
 
-const REPO = 'JuliusBrussee/caveman';
+const REPO = 'roobie/agent-caveman';
 
 function usesNativeSkills(provider, env = process.env) {
   return provider === 'continue' || provider === 'aider-desk' ||

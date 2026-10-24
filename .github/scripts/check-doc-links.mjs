@@ -11,7 +11,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const repoPrefix = /^https:\/\/github\.com\/JuliusBrussee\/caveman\/(?:blob|tree)\/main\/([^#?]+)/;
+const repoPrefix = /^https:\/\/github\.com\/roobie\/agent-caveman\/(?:blob|tree)\/main\/([^#?]+)/;
 const pages = new Map();
 const failures = [];
 

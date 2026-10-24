@@ -14,7 +14,7 @@ steps hard to understand.
 Install through supported skill installer:
 
 ```bash
-npx skills add JuliusBrussee/caveman
+npx skills add roobie/agent-caveman
 ```
 
 Preview remote skill content before installation when source is unfamiliar.
@@ -100,7 +100,7 @@ permissions. Treat them accordingly.
 ## Removing integrations
 
 ```bash
-npx -y github:JuliusBrussee/caveman -- --uninstall
+npx -y github:roobie/agent-caveman -- --uninstall
 ```
 
 Remove browser extension through browser settings.

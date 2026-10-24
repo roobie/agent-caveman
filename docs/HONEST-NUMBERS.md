@@ -63,5 +63,5 @@ not convert those estimates into verified savings, and the statusline no
 longer displays the numeric savings suffix. Memory-file comparisons report
 original and current bytes; they do not prove either file was sent to a provider.
 
-If your A/B contradicts these numbers, [open an issue](https://github.com/JuliusBrussee/caveman/issues).
+If your A/B contradicts these numbers, [open an issue](https://github.com/roobie/agent-caveman/issues).
 We will add result to this page.

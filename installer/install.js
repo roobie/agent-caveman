@@ -8,7 +8,7 @@
 //
 // Distribution:
 //   Local clone: node installer/install.js [flags]
-//   curl|bash:   delegated from install.sh shim → npx -y github:JuliusBrussee/caveman -- [flags]
+//   curl|bash:   delegated from install.sh shim → npx -y github:roobie/agent-caveman -- [flags]
 //   Windows:     pwsh install.ps1 [flags] → same npx delegation
 //
 // Pure stdlib, zero npm runtime deps.
@@ -32,7 +32,7 @@ const HOST_HOOKS = require('./lib/host-hooks');
 const PORTABLE = require('./lib/portable-process');
 const PLATFORM_PATHS = require('./lib/platform-paths');
 
-const REPO = 'JuliusBrussee/caveman';
+const REPO = 'roobie/agent-caveman';
 // Mirrors the `engines.node` floor in package.json. Hardcoded rather than read
 // from disk because this file also runs detached from a checkout (the curl
 // fallback path); `tests/installer/node-floor.test.mjs` fails the build if the
@@ -44,7 +44,7 @@ const MIN_NODE_MAJOR = 18;
 // the new tag on every release (CI release step) AFTER regenerating
 // src/hooks/checksums.sha256 so the integrity manifest matches the ref.
 // Overridable via CAVEMAN_REF for testing against a branch.
-const PINNED_REF = process.env.CAVEMAN_REF || 'v4.0.1';
+const PINNED_REF = process.env.CAVEMAN_REF || 'v5.0.0';
 const OPENCLAW_SKILL_VERSION = /^v?\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(PINNED_REF)
   ? PINNED_REF.replace(/^v/, '')
   : undefined;
@@ -2385,7 +2385,7 @@ function uninstall(ctx) {
   // every agent's directory, and generic skill names can be
   // the user's own. Run by hand it lists the names and asks first.
   ok('skills added by `npx skills` (Cursor/Windsurf/Cline/etc.) stay. To remove them:');
-  ok('  npx skills remove JuliusBrussee/caveman -g   (lists the skills and asks first)');
+  ok('  npx skills remove roobie/agent-caveman -g   (lists the skills and asks first)');
   ok('per-repo init files (.cursor/, .windsurf/, AGENTS.md) — remove with your editor');
   return cleanupFailed ? 1 : 0;
 }
@@ -2431,7 +2431,7 @@ function printHelp() {
   process.stdout.write(`caveman installer — detects your agents and installs caveman for each one.
 
 USAGE
-  npx -y github:JuliusBrussee/caveman -- [flags]
+  npx -y github:roobie/agent-caveman -- [flags]
   node installer/install.js [flags]
   bash install.sh [flags]              # shim → npx
   pwsh install.ps1 [flags]             # shim → npx
@@ -2466,10 +2466,10 @@ FLAGS
   -h, --help            Show this help.
 
 EXAMPLES
-  npx -y github:JuliusBrussee/caveman                        # default install
-  npx -y github:JuliusBrussee/caveman -- --all               # all the trimmings
-  npx -y github:JuliusBrussee/caveman -- --only claude
-  npx -y github:JuliusBrussee/caveman -- --uninstall
+  npx -y github:roobie/agent-caveman                        # default install
+  npx -y github:roobie/agent-caveman -- --all               # all the trimmings
+  npx -y github:roobie/agent-caveman -- --only claude
+  npx -y github:roobie/agent-caveman -- --uninstall
 
   Issues: https://github.com/${REPO}/issues
 `);

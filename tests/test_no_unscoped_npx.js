@@ -1,6 +1,6 @@
 // The unscoped npm package `caveman` belongs to someone else, so telling
 // anyone to npx it would run a stranger's code. The installer is
-// `npx -y github:JuliusBrussee/caveman`. No tracked text file may say otherwise.
+// `npx -y github:roobie/agent-caveman`. No tracked text file may say otherwise.
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
@@ -30,5 +30,5 @@ test('no tracked file tells anyone to run the unscoped caveman package', () => {
     if (!unscoped.test(text)) continue;
     text.split('\n').forEach((line, i) => { if (unscoped.test(line)) hits.push(`${file}:${i + 1}: ${line.trim()}`); });
   }
-  assert.deepStrictEqual(hits, [], 'use npx -y github:JuliusBrussee/caveman (installer)');
+  assert.deepStrictEqual(hits, [], 'use npx -y github:roobie/agent-caveman (installer)');
 });
