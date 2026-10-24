@@ -9,10 +9,6 @@
 # Local clone:
 #   pwsh install.ps1 [flags]
 #
-# After the installer it hands over to the CLI's first run (`caveman setup`:
-# modules, agents, one Continue) in an interactive console, and prints that
-# one command otherwise.
-#
 # Why a Node installer? install.sh + install.ps1 used to be parallel sources of
 # truth and constantly drifted (issue #249 was a `node -e "..."` quoting bug
 # that silently dropped the JSON merge step on every Windows install). One
@@ -33,9 +29,6 @@ function Install-Caveman {
   $ErrorActionPreference = "Stop"
   $Repo = "JuliusBrussee/caveman"
   $PinnedRef = if ($env:CAVEMAN_REF) { $env:CAVEMAN_REF } else { "v4.0.1" }
-  # The CLI release the first run comes from when caveman is not installed;
-  # kept equal to packages/cli/package.json (tests/installer/shim-security).
-  $CliVersion = "4.0.1"
 
   # Require Node ≥18.
   $node = Get-Command node -ErrorAction SilentlyContinue
@@ -95,41 +88,6 @@ caveman: Node.js (>=18) required. Install:
       & npx -y "github:$Repo#$PinnedRef" @InstallerArgs
     }
   }
-  if ($LASTEXITCODE -ne 0) { return }
-
-  # End in the CLI's first run: modules, agents, one Continue.
-  $skip = @($InstallerArgs | Where-Object { $_ -in @("-h", "--help", "--list", "-u", "--uninstall", "--dry-run") })
-  if ($skip.Count -gt 0) { return }
-  # The skills above run on Node 18; the CLI (runtime, routing) needs 22.13.
-  # A prerelease Node ("25.0.0-nightly…") is not a [version] until its suffix goes.
-  $nodeVersion = [version](([string](& node -p "process.versions.node")) -replace '[-+].*$', '')
-  if ($nodeVersion -lt [version]"22.13.0") {
-    Write-Host ""
-    Write-Host "caveman: skills installed. The runtime (smaller inputs, Auto routing) needs Node 22.13+; this is v$nodeVersion."
-    Write-Host "  Upgrade Node (winget install OpenJS.NodeJS.LTS), then run: npx -y @caveman-ai/cli@$CliVersion"
-    return
-  }
-  # The caveman on PATH when it is this release or newer: an older CLI has an
-  # older setup, so npx runs this one and its setup installs it for good, but
-  # over a newer CLI that would be a downgrade. A prerelease ranks below its
-  # own release, and two prereleases of one release rank as semver orders
-  # them; a version that cannot be read counts as older. The probe gives up
-  # after 10s. Same probe as install.sh, with no double quotes in it:
-  # Windows PowerShell drops those from a native command's arguments (#249).
-  $setup = @("npx", "-y", "@caveman-ai/cli@$CliVersion", "setup")
-  if (Get-Command caveman -ErrorAction SilentlyContinue) {
-    try {
-      & node -e 'const r=require(`child_process`).spawnSync(`caveman --version`,{shell:true,encoding:`utf8`,timeout:1e4,killSignal:`SIGKILL`,stdio:[`ignore`,`pipe`,`ignore`],windowsHide:true});const v=s=>(s=/^(\d+)\.(\d+)\.(\d+)(?:-([\w.-]+))?/.exec(s))&&[s[1],s[2],s[3],+!s[4],...s[4]?s[4].split(`.`):[]].map(x=>/^\d+$/.test(x)?+x:x);let h;try{h=v(JSON.parse(r.stdout).version)}catch{}const c=(a,b)=>a===b?0:a===undefined?-1:b===undefined?1:typeof a!=typeof b?(typeof a==`number`?-1:1):a<b?-1:1;const w=v(process.argv[1]),d=h&&w&&[...h,...w].map((_,i)=>c(h[i],w[i])).find(x=>x);process.exitCode=h&&w&&!(d<0)?0:1' $CliVersion 2>$null
-      if ($LASTEXITCODE -eq 0) { $setup = @("caveman", "setup") }
-    } catch { }
-  }
-  # --non-interactive never prompts: name the first run instead of starting it.
-  if ($InstallerArgs -notcontains "--non-interactive" -and [Environment]::UserInteractive -and -not [Console]::IsInputRedirected -and -not [Console]::IsOutputRedirected) {
-    & $setup[0] $setup[1..($setup.Length - 1)]
-    return
-  }
-  Write-Host "Next: $($setup -join ' ')"
-  $global:LASTEXITCODE = 0
 }
 
 # $args is the automatic variable: populated when run as a file

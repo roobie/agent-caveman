@@ -38,9 +38,5 @@
     "NOTICE",
     "!**/__pycache__/**",
     "!**/*.py[cod]"
-  ],
-  "packageManager": "pnpm@10.14.0",
-  "dependencies": {
-    "@caveman-ai/cli": "^4.0.0"
-  }
+  ]
 }

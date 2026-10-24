@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { nodeStub } from '../../packages/cli/tests/harness/stub-bin.mjs';
+import { nodeStub } from '../harness/stub-bin.mjs';
 import { isolatedEnv } from './_isolated-env.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -36,7 +36,7 @@ function sandbox(t, codexDir = 'codex home') {
       : env.PATH,
   });
   const run = (...args) => spawnSync(process.execPath, [
-    INSTALLER, ...args, '--config-dir', path.join(dir, 'claude'), '--non-interactive', '--no-mcp-shrink',
+    INSTALLER, ...args, '--config-dir', path.join(dir, 'claude'), '--non-interactive',
   ], { encoding: 'utf8', cwd: dir, env });
   const hooksPath = path.join(codexHome, 'hooks.json');
   const readHooks = () => JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
@@ -178,18 +178,4 @@ test('the hook runs node by its absolute path, and replaces an older bare-node e
   else assert.ok(command.startsWith(`"${path.dirname(process.execPath)}/node" "`), command);
   assert.equal(run('--uninstall').status, 0);
   assert.equal(fs.existsSync(hooksPath), false);
-});
-
-// Once the caveman CLI wires Codex natively (a `caveman enable` journal), its
-// output module is the one injection and `caveman off` switches it. A second,
-// always-on voice hook would inject again and outlive `caveman off`.
-test('install skips the hook while the caveman CLI wires Codex', (t) => {
-  const { dir, hooksPath, codexHome, run } = sandbox(t);
-  fs.mkdirSync(path.join(dir, '.caveman', 'integrations'), { recursive: true });
-  fs.writeFileSync(path.join(dir, '.caveman', 'integrations', 'codex.json'), '{}\n');
-  const r = run('--only', 'codex');
-  assert.equal(r.status, 0, r.stdout + r.stderr);
-  assert.match(r.stdout + r.stderr, /caveman already wires Codex/);
-  assert.equal(fs.existsSync(hooksPath), false);
-  assert.deepEqual(fs.readdirSync(codexHome), []);
 });

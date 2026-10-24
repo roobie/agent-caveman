@@ -5,7 +5,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, write
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { nodeStub, stubEnv } from '../../packages/cli/tests/harness/stub-bin.mjs';
+import { nodeStub, stubEnv } from '../harness/stub-bin.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const sources = join(root, 'src/hooks');

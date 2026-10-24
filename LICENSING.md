@@ -1,9 +1,9 @@
 # Caveman Licensing
 
 Everything in this repository is licensed under the Apache License, Version 2.0,
-starting with Caveman 3.0.0. That covers the skill, CLI, SDKs, middleware,
-extension, and the whole runtime: Engine, Proxy, Browse, MCP server,
-`shrink`, the cavemem Go core, and the shared Go platform.
+starting with Caveman 3.0.0. That covers the skills, hooks, installer, and
+extension. Runtime components that earlier releases carried have been removed
+from this repository.
 
 Caveman Cloud, the hosted service, is separate commercial software. Its source
 is not in this repository and this license does not cover it.
@@ -14,8 +14,8 @@ is not in this repository and this license does not cover it.
 - Root `NOTICE` carries the copyright line and third-party attributions.
 - Root `LICENSE-MIT` keeps the MIT License text that covered the MIT parts of
   the repository before 3.0.0 (see below).
-- Every directory that ships its own `LICENSE` (npm and PyPI packages, the npm
-  launchers, the Go modules) carries a byte-identical copy of the root `LICENSE`.
+- Every directory that ships its own `LICENSE` carries a byte-identical copy of
+  the root `LICENSE`.
 
 Copyright 2026 Julius Brussee.
 
@@ -47,23 +47,6 @@ the same terms as the rest of the repository. See `CONTRIBUTING.md`.
 
 ## Third-party code
 
-`engine/pixel/` is a Go port of pxpipe (MIT, Copyright (c) 2026
-claude-image-proxy contributors) with embedded glyph atlases derived from the
-Spleen 5x8 (BSD-2-Clause) and GNU Unifont (OFL-1.1 / GPLv2 with font-embedding
-exception) fonts. The upstream MIT and font notices are preserved in
-`engine/pixel/NOTICE` and `engine/pixel/assets/`.
-
-`browse/` links MIT-licensed chromedp modules; see `browse/NOTICE`.
-
-The runtime binaries and container image link third-party Go modules (MIT,
-BSD-3-Clause, Apache-2.0); every binary release ships their license texts as
-`THIRD_PARTY_GO_LICENSES.tar.gz`, and the image under `/licenses/third_party/`.
-The release `caveman-proxy` and `caveman-engine` are built with `zig cc` and
-statically link Zig's compiler runtime (MIT), musl libc on Linux (MIT), and the
-mingw-w64 runtime on Windows (ZPL-2.1); their notices ship as `LICENSE.zig`,
-`COPYRIGHT.musl` and `COPYING.mingw-w64`.
-The CLI contains a port of part of Qwen Code (Apache-2.0) and bundles
-MIT-licensed `@clack/prompts` and its dependencies; see `packages/cli/NOTICE`.
 The extension ships the Geist fonts under the SIL Open Font License 1.1
 (`extension/fonts/GEIST_LICENSE.txt`).
 

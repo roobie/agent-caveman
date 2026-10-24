@@ -17,23 +17,11 @@ function packageBins(pkg) {
   return pkg.bin ?? {};
 }
 
-test('installer bin does not collide with the bundled CLI', () => {
-  const installer = readPackage();
-  const cli = readPackage('packages', 'cli');
-  const installerBins = Object.entries(packageBins(installer));
+test('the GitHub package exposes only the unified installer', () => {
+  const installerBins = Object.entries(packageBins(readPackage()));
 
   assert.deepEqual(
     installerBins.map(([, target]) => target),
     ['./installer/install.js'],
-    'the GitHub package must expose only the unified installer',
   );
-
-  const cliBinNames = new Set(Object.keys(packageBins(cli)));
-  for (const [name] of installerBins) {
-    assert.equal(
-      cliBinNames.has(name),
-      false,
-      `installer bin ${name} is overwritten by @caveman-ai/cli during npm exec`,
-    );
-  }
 });

@@ -35,9 +35,6 @@ prove a token-reduction percentage. See
 headings, code blocks, URLs, paths, and list structure. Those checks do not prove
 semantic equivalence. Review diff before replacing high-stakes instructions.
 
-See [Exploration and delegation](exploration-and-delegation.md) for explorer and
-Cavecrew boundaries.
-
 ## Hooks
 
 Hook package supports agent lifecycle events including:
@@ -47,21 +44,19 @@ Hook package supports agent lifecycle events including:
 - command or pre-tool execution;
 - status-line updates.
 
-Hooks can add mode reminders, expose recovery context, and compact command
-output. They should not change user commands or hide an execution failure.
+Hooks add mode reminders and a statusline badge. They should not change user
+commands or hide an execution failure.
 
 Hook state uses atomic writes and restrictive file permissions. Symlink checks
 prevent a project-controlled link from redirecting trusted state writes.
 
-Install supported native hooks with setup commands documented in
-[Agent wrapping](agent-wrapping.md).
+Install hooks with the installer, see [`INSTALL.md`](../../INSTALL.md).
 
 ## Native plugins
 
-Some agents do not expose equivalent hooks. Their profiles use native plugins:
+Some agents do not expose equivalent hooks. They use native integrations:
 
-- Hermes Agent plugin;
-- OpenClaw plugin;
+- OpenClaw workspace skill plus `SOUL.md` block;
 - OpenCode plugin.
 
 OpenCode integration listens to native session and prompt events and can use
@@ -104,12 +99,8 @@ permissions. Treat them accordingly.
 
 ## Removing integrations
 
-Use agent-native setup removal where available:
-
 ```bash
-caveman setup --agent-native claude --remove
+npx -y github:JuliusBrussee/caveman -- --uninstall
 ```
 
-Remove skill packages through installer or agent skill manager, and remove
-browser extension through browser settings. Review agent config for stale
-endpoint variables afterward.
+Remove browser extension through browser settings.

@@ -52,7 +52,7 @@ Update: `test_mode_tracker.py`, `test_caveman_parse.js`, `test_mode_tracker_rule
 
 New: legacy value migration (`wenyan-lite` session file resolves to `megacave`; `.caveman-active` holding `lite` resolves to `caveman`); `/ultracave` and `/megacave` parse; reinforcement derived from file; statusline badges for new ids; compile output equals checked-in generated files.
 
-Regenerate `src/hooks/checksums.sha256`, plugin mirror, `dist/caveman.skill`, `packages/cli/src/agent-skills.generated.ts`.
+Regenerate `src/hooks/checksums.sha256`, plugin mirror, `dist/caveman.skill`.
 
 ## Evals
 

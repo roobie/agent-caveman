@@ -77,7 +77,7 @@ function shimOmp(home) {
 }
 
 function runInstaller(args, home, extraEnv = {}, withOmp = true) {
-  return spawnSync(process.execPath, [INSTALLER, ...args, '--non-interactive', '--no-mcp-shrink'], {
+  return spawnSync(process.execPath, [INSTALLER, ...args, '--non-interactive'], {
     env: {
       ...isolatedEnv(home, withOmp ? [shimOmp(home)] : []),
       ...extraEnv,

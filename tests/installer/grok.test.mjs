@@ -35,7 +35,7 @@ function freshHome() {
 }
 
 function runInstaller(args, grokHome, cwd = grokHome) {
-  return spawnSync(process.execPath, [INSTALLER, ...args, '--config-dir', path.join(grokHome, '.claude-test'), '--non-interactive', '--no-mcp-shrink'], {
+  return spawnSync(process.execPath, [INSTALLER, ...args, '--config-dir', path.join(grokHome, '.claude-test'), '--non-interactive'], {
     cwd,
     env: { ...isolatedEnv(path.join(grokHome, 'home')), GROK_HOME: grokHome },
     encoding: 'utf8',
@@ -105,7 +105,7 @@ test('grok relative GROK_HOME resolves cwd-relative', () => {
   try {
     const project = path.join(home, 'project');
     fs.mkdirSync(project);
-    const r = spawnSync(process.execPath, [INSTALLER, '--only', 'grok', '--config-dir', path.join(home, '.claude-test'), '--non-interactive', '--no-mcp-shrink'], {
+    const r = spawnSync(process.execPath, [INSTALLER, '--only', 'grok', '--config-dir', path.join(home, '.claude-test'), '--non-interactive'], {
       cwd: project,
       env: { ...isolatedEnv(path.join(home, 'home')), GROK_HOME: 'custom grok' },
       encoding: 'utf8',

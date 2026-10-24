@@ -31,7 +31,6 @@ const CURSOR_NATIVE = require('./lib/cursor-native');
 const HOST_HOOKS = require('./lib/host-hooks');
 const PORTABLE = require('./lib/portable-process');
 const PLATFORM_PATHS = require('./lib/platform-paths');
-const { parseCommandArgs } = require('./lib/command-args');
 
 const REPO = 'JuliusBrussee/caveman';
 // Mirrors the `engines.node` floor in package.json. Hardcoded rather than read
@@ -51,7 +50,6 @@ const OPENCLAW_SKILL_VERSION = /^v?\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(P
   : undefined;
 const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${PINNED_REF}`;
 const HOOKS_REMOTE = `${RAW_BASE}/src/hooks`;
-const MCP_SHRINK_PKG = 'caveman-shrink';
 // Hook files to copy. Statusline ships in both .sh (macOS/Linux) and .ps1
 // (Windows) flavors — copy both regardless of host OS so a roaming
 // $CLAUDE_CONFIG_DIR (e.g. dotfiles repo) keeps working across platforms.
@@ -87,22 +85,13 @@ function hooksManifestIsOurs(p) {
 function parseArgs(argv) {
   const opts = {
     dryRun: false, force: false,
-    withHooks: 'auto', withInit: false, withMcpShrink: false,
+    withHooks: 'auto', withInit: false,
     all: false, minimal: false, listOnly: false, noColor: false,
     only: [], uninstall: false, nonInteractive: false,
     configDir: null, help: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    // --with-mcp-shrink=<upstream cmd>  (handled before the switch so the
-    // GNU-style =value form is recognized). Bare --with-mcp-shrink falls
-    // through to the switch and is rejected — caveman-shrink is a proxy
-    // and a stub registration just lands the user in a broken-MCP loop (#474).
-    if (a.startsWith('--with-mcp-shrink=')) {
-      const raw = a.slice('--with-mcp-shrink='.length);
-      opts.withMcpShrink = upstreamArgs(raw);
-      continue;
-    }
     switch (a) {
       case '--dry-run': opts.dryRun = true; break;
       case '--force': opts.force = true; break;
@@ -111,19 +100,6 @@ function parseArgs(argv) {
       case '--with-hooks': opts.withHooks = true; break;
       case '--no-hooks': opts.withHooks = false; break;
       case '--with-init': opts.withInit = true; break;
-      case '--with-mcp-shrink': {
-        const v = argv[i + 1];
-        if (v && !v.startsWith('--')) {
-          i++;
-          opts.withMcpShrink = upstreamArgs(v);
-        } else {
-          die('error: --with-mcp-shrink requires an upstream command — caveman-shrink\n' +
-              '  is a proxy and exits immediately without one. Pass the upstream:\n' +
-              '  --with-mcp-shrink="npx @modelcontextprotocol/server-filesystem /path"');
-        }
-        break;
-      }
-      case '--no-mcp-shrink': opts.withMcpShrink = false; break;
       case '--all': opts.all = true; break;
       case '--minimal': opts.minimal = true; break;
       case '--list': opts.listOnly = true; break;
@@ -159,11 +135,8 @@ function parseArgs(argv) {
   //   • withHooks — left at 'auto' so installClaude() can skip standalone
   //     settings.json wiring when the plugin manifest already wires the hooks
   //     (duplicate registration fires both per event — issue #392).
-  //   • withMcpShrink — caveman-shrink is a proxy that needs an upstream
-  //     command, so there's no sensible "everything on" default (issue #474).
-  //     Opt in explicitly with --with-mcp-shrink="<upstream cmd>".
   if (opts.all) { opts.withInit = true; }
-  if (opts.minimal) { opts.withHooks = false; opts.withInit = false; opts.withMcpShrink = false; }
+  if (opts.minimal) { opts.withHooks = false; opts.withInit = false; }
   // Validate --only ids against the provider matrix. PROVIDERS is defined later
   // in the file but is in scope by the time this function runs.
   if (opts.only.length) {
@@ -178,13 +151,6 @@ function parseArgs(argv) {
 }
 
 function die(msg) { process.stderr.write(msg + '\n'); process.exit(2); }
-
-function upstreamArgs(value) {
-  try { return parseCommandArgs(value); }
-  catch (error) {
-    die(`error: --with-mcp-shrink requires an upstream command: ${error.message}`);
-  }
-}
 
 // ── Color helpers ──────────────────────────────────────────────────────────
 function makeChalk(noColor) {
@@ -685,14 +651,6 @@ async function installClaude(ctx) {
     else results.failed.push(['claude-hooks', r]);
   }
 
-  if (opts.withMcpShrink) {
-    say('  → wiring caveman-shrink MCP proxy (--with-mcp-shrink)');
-    const r = installMcpShrink(ctx);
-    if (r.kind === 'ok')   results.installed.push('caveman-shrink');
-    if (r.kind === 'skip') results.skipped.push(['caveman-shrink', r.why]);
-    if (r.kind === 'fail') results.failed.push(['caveman-shrink', r.why]);
-  }
-
   process.stdout.write('\n');
 }
 
@@ -903,8 +861,7 @@ function installViaSkills(ctx, prov) {
 // /hooks — never pre-trust it). The owned payload mirrors the layout the
 // hook's path math expects: hooks/codex-sessionstart.js loads caveman-config.js
 // beside it and reads ../skills/<mode>/SKILL.md. Our hooks.json entry is the
-// one whose command runs our script; foreign hooks and the caveman CLI's
-// native-hook entries are never touched. --no-hooks / --minimal skip it.
+// one whose command runs our script; foreign hooks are never touched. --no-hooks / --minimal skip it.
 const CODEX_PAYLOAD_DIR = 'caveman';
 const CODEX_HOOK_SKILLS = ['caveman', 'ultracave'];
 
@@ -952,14 +909,6 @@ function installCodexHook(ctx) {
   if (!repoRoot) {
     note(`  skipped Codex always-on hook: needs the full caveman package (npx -y github:${REPO} -- --only codex)`);
     results.skipped.push(['codex-hooks', 'needs the full caveman package']);
-    return;
-  }
-  // The caveman CLI wires Codex natively: its output module is the one
-  // injection, and `caveman off` switches it. This hook would inject again
-  // and outlive `caveman off`.
-  if (remainingNativeIntegrations().includes('codex')) {
-    note('  skipped Codex always-on hook: caveman already wires Codex (caveman on|off output switches it)');
-    results.skipped.push(['codex-hooks', 'caveman already wires Codex']);
     return;
   }
   if (opts.dryRun) {
@@ -1135,7 +1084,7 @@ const HERMES_SKILL_DIRS = ['caveman', 'ultracave','caveman-commit', 'caveman-rev
 function hermesConfigDir() {
   // Hermes uses ~/.hermes by default, or HERMES_HOME env var. Hermes 0.21.5 reads
   // the override as Path(expanduser(expandvars(value.strip()))); same as hermesHome()
-  // in packages/cli. ponytail: no `~user` or Windows quote/escape forms.
+  // in the Hermes host. ponytail: no `~user` or Windows quote/escape forms.
   const override = (process.env.HERMES_HOME || '').trim();
   if (!override) return path.join(os.homedir(), '.hermes', 'skills');
   const lookup = (whole, name) => (process.env[name] !== undefined ? process.env[name] : whole);
@@ -1298,7 +1247,7 @@ const OMP_PLUGIN_DESCRIPTION = 'Caveman terse communication mode for Oh My Pi';
 const OMP_RULE_COUNT = 1;
 // OMP has no hook files for plugins; persistence (issue #743 — caveman must
 // stay active beyond the first prompt) comes from re-appending the ruleset to
-// the system prompt on every before_agent_start, mirroring packages/pi-extension.
+// the system prompt on every before_agent_start.
 // Rule text is embedded at install time: no runtime fs reads, no second source.
 function ompExtensionSource(ruleBodyText) {
   const ruleLiteral = JSON.stringify(ruleBodyText);
@@ -1528,7 +1477,7 @@ function installOpencode(ctx) {
     note(`  would copy ${OPENCODE_COMMAND_FILES.length} command files into ${commandsDir}/`);
     note(`  would copy ${OPENCODE_AGENT_FILES.length} cavecrew agents into ${agentsDir}/`);
     note(`  would copy ${OPENCODE_SKILL_DIRS.length} skill dirs into ${skillsDir}/`);
-    note(`  would patch ${opencodeJson} with "plugin" entry${opts.withMcpShrink ? ' + caveman-shrink MCP' : ''}`);
+    note(`  would patch ${opencodeJson} with "plugin" entry`);
     note(`  would write Tier-3 ruleset to ${agentsMd}`);
     results.installed.push('opencode');
     process.stdout.write('\n');
@@ -1687,7 +1636,7 @@ function installOpencode(ctx) {
       process.stdout.write(`  installed: ${agentsMd}\n`);
     }
 
-    // 6. opencode.json — add plugin entry; optional caveman-shrink MCP.
+    // 6. opencode.json — add plugin entry.
     const ocMeta = {};
     let cfg = SETTINGS.readSettings(opencodeJson, ocMeta);
     if (cfg === null) {
@@ -1711,20 +1660,6 @@ function installOpencode(ctx) {
     cfg.plugin = cfg.plugin.filter(p => p !== OPENCODE_PLUGIN_LEGACY_REL);
     if (!cfg.plugin.includes(OPENCODE_PLUGIN_REL)) {
       cfg.plugin.push(OPENCODE_PLUGIN_REL);
-    }
-    if (opts.withMcpShrink) {
-      // opts.withMcpShrink is the array of upstream-cmd tokens parseArgs
-      // produced. caveman-shrink is a proxy — it crashes without an upstream,
-      // so we always wire one through.
-      if (!cfg.mcp || typeof cfg.mcp !== 'object') cfg.mcp = {};
-      if (!cfg.mcp['caveman-shrink']) {
-        cfg.mcp['caveman-shrink'] = {
-          type: 'local',
-          command: ['npx', '-y', MCP_SHRINK_PKG, ...opts.withMcpShrink],
-          enabled: true,
-        };
-        process.stdout.write(`  registered caveman-shrink MCP server (wraps: ${opts.withMcpShrink.join(' ')})\n`);
-      }
     }
     SETTINGS.writeSettings(opencodeJson, cfg);
     process.stdout.write(`  patched: ${opencodeJson}\n`);
@@ -1946,43 +1881,6 @@ async function installHooks(ctx) {
   return 'ok';
 }
 
-// ── MCP shrink wiring ─────────────────────────────────────────────────────
-function installMcpShrink(ctx) {
-  const { note, warn, opts } = ctx;
-  // Probe npm first — registry outage = clean skip with manual snippet.
-  const probe = captureSpawn('npm', ['view', MCP_SHRINK_PKG, 'name']);
-  if (probe.status !== 0) {
-    warn(`    'npm view ${MCP_SHRINK_PKG}' returned no metadata — registry unreachable or package missing.`);
-    note('    Skipping registration. Re-run --with-mcp-shrink when the registry is reachable.');
-    return { kind: 'skip', why: 'npm registry probe failed' };
-  }
-  // Detect modern `claude mcp add`
-  const help = captureSpawn('claude', ['mcp', '--help']);
-  if (help.status !== 0) {
-    note("    'claude mcp add' not available on this CLI. Add the snippet from");
-    note('    src/hooks/README.md to your Claude Code MCP config manually.');
-    return { kind: 'skip', why: 'manual config required' };
-  }
-  // opts.withMcpShrink is always an array of upstream-cmd tokens by the
-  // time we get here; parseArgs rejects bare --with-mcp-shrink. The proxy
-  // gets `npx -y caveman-shrink <upstream tokens...>` so it has something
-  // to wrap.
-  const upstream = opts.withMcpShrink;
-  const r = runSpawn(
-    'claude',
-    ['mcp', 'add', 'caveman-shrink', '--', 'npx', '-y', MCP_SHRINK_PKG, ...upstream],
-    null, opts.dryRun
-  );
-  if (spawnOk(r)) {
-    note(`    registered, wrapping: ${upstream.join(' ')}`);
-    note(`    Edit ~/.claude.json mcpServers["caveman-shrink"] to change the upstream,`);
-    note('    or `claude mcp remove caveman-shrink` to drop it.');
-    note(`    Docs: https://github.com/${REPO}/tree/main/src/mcp-servers/caveman-shrink`);
-    return { kind: 'ok' };
-  }
-  return { kind: 'fail', why: 'claude mcp add failed' };
-}
-
 // ── Init writers (per-repo rule files) ────────────────────────────────────
 async function runInit(ctx) {
   const { warn, opts, repoRoot } = ctx;
@@ -2070,121 +1968,12 @@ async function loadRemoteHookChecksums() {
 
 // ── Uninstall ─────────────────────────────────────────────────────────────
 
-// Agents whose `caveman enable` journal is still on disk. `CAVEMAN_HOME` is the
-// same override the CLI itself honors, so a non-default home is not read as a
-// clean machine. Read-only and silent-failing: a machine that never had the CLI
-// has no such directory, and an unreadable one must not fail an uninstall.
-function remainingNativeIntegrations() {
-  const dir = path.join(process.env.CAVEMAN_HOME || path.join(os.homedir(), '.caveman'), 'integrations');
-  try {
-    return fs.readdirSync(dir)
-      // A journal is exactly `<agent>.json`. `.pending-<agent>.json` is an
-      // interrupted transaction; `<agent>.voice-skills.json`,
-      // `<agent>.agent-native-bundle*.json` and `claude-profiles.json` are
-      // records `disable` keeps on purpose, not routes.
-      .filter((name) => /^[^.]+\.json$/.test(name) && name !== 'claude-profiles.json')
-      .map((name) => name.slice(0, -'.json'.length))
-      .sort();
-  } catch (_) {
-    return [];
-  }
-}
-
-// The CLI this package depends on, when it is newer than the `caveman` first on
-// PATH. An older CLI cannot undo state a newer one wrote: 1.x removed the route
-// but left Claude Code on the caveman-auto model it never knew. Under npx the
-// bundled CLI is already first on PATH; this covers a clone or global install.
-function newerBundledCli() {
-  try {
-    const manifest = require.resolve('@caveman-ai/cli/package.json');
-    const pkg = JSON.parse(fs.readFileSync(manifest, 'utf8'));
-    if (!pkg.bin || typeof pkg.bin.caveman !== 'string') return null;
-    const bin = path.join(path.dirname(manifest), pkg.bin.caveman);
-    const want = /^(\d+)\.(\d+)\.(\d+)/.exec(pkg.version || '');
-    // A foreign `caveman` that never answers must not stall uninstall.
-    const probe = captureSpawn('caveman', ['--version'], { timeout: 10000, killSignal: 'SIGKILL' });
-    const have = /(\d+)\.(\d+)\.(\d+)/.exec(probe.stdout || '');
-    if (!want || !have || !spawnOk(probe) || !fs.existsSync(bin)) return null;
-    for (let i = 1; i <= 3; i++) {
-      if (Number(want[i]) !== Number(have[i])) return Number(want[i]) > Number(have[i]) ? bin : null;
-    }
-  } catch (_) { /* no bundled CLI: use the one on PATH */ }
-  return null;
-}
-
-// The `engines.node` floor of the CLI this package depends on, when this Node
-// is below it — `>=22.13` for 2.x, above the installer's own floor. Under npx
-// that CLI is also the `caveman` first on PATH. Null when there is no bundled
-// CLI or its floor is met.
-function bundledCliNodeFloorUnmet() {
-  try {
-    const pkg = JSON.parse(fs.readFileSync(require.resolve('@caveman-ai/cli/package.json'), 'utf8'));
-    const floor = /^>=\s*(\d+)(?:\.(\d+))?(?:\.(\d+))?\s*$/.exec((pkg.engines && pkg.engines.node) || '');
-    if (!floor) return null;
-    const have = process.versions.node.split('.').map(Number);
-    for (let i = 0; i < 3; i++) {
-      const want = Number(floor[i + 1] || 0);
-      if (have[i] !== want) return have[i] < want ? floor[0].replace(/^>=\s*/, '').trim() : null;
-    }
-  } catch (_) { /* no bundled CLI */ }
-  return null;
-}
-
 function uninstall(ctx) {
   const { say, note, warn, ok, opts, configDir } = ctx;
   let cleanupFailed = false;
   say('🪨 caveman uninstall');
 
   if (opts.dryRun) note('  (dry run — nothing will be removed)');
-
-  // Native integrations (`caveman enable <agent>`) journal their prior state
-  // at ~/.caveman/integrations/<agent>.json; restore it through the CLI's own
-  // `disable --all` rather than re-deriving that logic here. Setup puts the CLI
-  // under $CAVEMAN_HOME/cli when the global npm prefix is not writable, so an
-  // older caveman can stay first on PATH; only the newer one undoes all it
-  // wrote, and a second run finds nothing left, so both run. A caveman on PATH
-  // older than the bundled CLI hands its turn to the bundled one. Never on a
-  // Node the bundled CLI does not support: it crashes or runs unsupported
-  // there, so the routes go to the guidance below instead.
-  const cliNodeFloor = bundledCliNodeFloorUnmet();
-  const privateCli = path.join(process.env.CAVEMAN_HOME || path.join(os.homedir(), '.caveman'), 'cli',
-    ...(process.platform === 'win32' ? ['caveman.cmd'] : ['bin', 'caveman']));
-  const disables = [];
-  if (!cliNodeFloor && fs.existsSync(privateCli)) disables.push([privateCli, ['disable', '--all']]);
-  if (!cliNodeFloor && hasCmd('caveman')) {
-    const bundled = newerBundledCli();
-    // The PATH caveman takes its turn only when the bundled CLI could not be
-    // spawned or was killed by a signal, never when it ran and failed.
-    disables.push(bundled ? [process.execPath, [bundled, 'disable', '--all'], 'caveman'] : ['caveman', ['disable', '--all']]);
-  }
-  // Only a CLI that did not run (spawn error, killed) hands over: one that ran
-  // and failed keeps its failure, which an older CLI's exit 0 would hide.
-  const failedDisables = disables.filter(([cmd, args, fallback]) => {
-    const r = runSpawn(cmd, args, null, opts.dryRun);
-    return !spawnOk(r) && !(fallback && (!r || r.error || r.signal) && spawnOk(runSpawn(fallback, ['disable', '--all'], null, opts.dryRun)));
-  });
-  if (failedDisables.length > 0) {
-    cleanupFailed = true;
-    warn('  `caveman disable --all` failed (see above); native Caveman routing may still be installed.');
-  } else if (disables.length > 0 && !opts.dryRun) {
-    ok('  disabled native agent integrations');
-  }
-
-  // ...and say so when one survived. `disable` removes the journal it restored
-  // from, so a journal still sitting here after the call above is exact evidence
-  // that a caveman route (ANTHROPIC_BASE_URL + _CLAUDE_CODE_ASSUME_FIRST_PARTY_
-  // BASE_URL for Claude) is still in the host's settings — the CLI was already
-  // npm-uninstalled, or `disable --all` failed. Silence there leaves the user
-  // with a dead route and the Remote Control breakage of #947, with nothing in
-  // the uninstall output pointing at the cause (#1040). Reading the journal
-  // directory is not re-deriving the restore logic: it never writes.
-  if (!opts.dryRun) {
-    const stranded = remainingNativeIntegrations();
-    if (stranded.length > 0) cleanupFailed = true;
-    for (const agent of stranded) warn(`  ${agent}: native Caveman routing is still installed and was not removed here.`);
-    if (stranded.length > 0 && cliNodeFloor) warn(`  The Caveman CLI needs Node ${cliNodeFloor} or newer; this is ${process.version}. Upgrade Node first.`);
-    if (stranded.length > 0) warn('  Run `caveman disable --all` (reinstall @caveman-ai/cli first if needed) to restore the host settings.');
-  }
 
   // Hooks: remove from settings.json + delete hook files.
   const hooksDir = path.join(configDir, 'hooks');
@@ -2262,20 +2051,6 @@ function uninstall(ctx) {
     } else {
       note('  claude plugin not installed — skipping');
     }
-
-    // caveman-shrink MCP — only run if `claude mcp` subcommand exists. Output
-    // is captured: most machines never registered the server, and the CLI
-    // says so on stderr every time.
-    const mcpHelp = captureSpawn('claude', ['mcp', '--help']);
-    if (mcpHelp.status === 0) {
-      const args = ['mcp', 'remove', 'caveman-shrink'];
-      const r = opts.dryRun ? runSpawn('claude', args, null, true) : captureSpawn('claude', args);
-      const said = `${r.stdout || ''}${r.stderr || ''}`.trim();
-      if (!opts.dryRun && !/^No MCP server named/i.test(said)) {
-        if (spawnOk(r)) ok('  removed the caveman-shrink MCP server');
-        else warn(`  claude mcp remove caveman-shrink failed: ${said.split('\n')[0] || 'no output'}`);
-      }
-    }
   }
 
   // Gemini extension. Same idempotency probe as claude.
@@ -2344,10 +2119,6 @@ function uninstall(ctx) {
         if (Array.isArray(cfg.plugin)) {
           cfg.plugin = cfg.plugin.filter(p => p !== OPENCODE_PLUGIN_REL && p !== OPENCODE_PLUGIN_LEGACY_REL);
           if (cfg.plugin.length === 0) delete cfg.plugin;
-        }
-        if (cfg.mcp && typeof cfg.mcp === 'object' && cfg.mcp['caveman-shrink']) {
-          delete cfg.mcp['caveman-shrink'];
-          if (Object.keys(cfg.mcp).length === 0) delete cfg.mcp;
         }
         // Install backs up a config that was already there, so an emptied one
         // without a backup is the one install created: it goes too.
@@ -2648,9 +2419,9 @@ function printList(noColor) {
     process.stdout.write(`  ${pad(p.id, 15)} ${pad(p.label, 22)} ${p.mech}${tag}\n`);
   }
   process.stdout.write('\n');
-  process.stdout.write(c.dim('  Defaults: hooks auto (Claude Code: only without the plugin), --with-init OFF, --with-mcp-shrink OFF.\n'));
-  process.stdout.write(c.dim('  --all = hooks + init (mcp-shrink needs an upstream — opt in explicitly).\n'));
-  process.stdout.write(c.dim('  --minimal turns hooks + init + mcp-shrink off.\n'));
+  process.stdout.write(c.dim('  Defaults: hooks auto (Claude Code: only without the plugin), --with-init OFF.\n'));
+  process.stdout.write(c.dim('  --all = hooks + init.\n'));
+  process.stdout.write(c.dim('  --minimal turns hooks + init off.\n'));
 }
 
 function pad(s, n) { s = String(s); return s + ' '.repeat(Math.max(0, n - s.length)); }
@@ -2670,8 +2441,7 @@ FLAGS
   --force               Re-run even if a target reports already installed.
   --only <agent>        Install only for the named agent. Repeatable.
                         See --list for valid ids.
-  --all                 Turn on hooks + init. (mcp-shrink needs an upstream;
-                        pass --with-mcp-shrink="<cmd>" to add it.)
+  --all                 Turn on hooks + init.
   --minimal             Just the plugin/extension install.
   --with-hooks          Claude Code: install SessionStart/SubagentStart/
                         UserPromptSubmit hooks + statusline badge.
@@ -2683,14 +2453,6 @@ FLAGS
                         runs them; --with-hooks wires them anyway.)
   --no-hooks            Skip the hooks installer.
   --with-init           Write per-repo IDE rule files into \$PWD.
-  --with-mcp-shrink="<upstream cmd>"
-                        Claude Code (and opencode): register caveman-shrink MCP
-                        proxy wrapping the given upstream. Default OFF.
-                        caveman-shrink crashes without an upstream, so a value
-                        is required. Quotes group paths containing spaces;
-                        backslashes stay literal. A JSON argv array also works.
-                        Example: --with-mcp-shrink="npx @modelcontextprotocol/server-filesystem /tmp"
-  --no-mcp-shrink       Skip MCP shrink. (Default.)
   --uninstall, -u       Remove caveman from this machine.
   --config-dir <path>   Claude Code config dir for hook files + settings.json.
                         Default: \$CLAUDE_CONFIG_DIR or ~/.claude. Does NOT
@@ -2706,7 +2468,7 @@ FLAGS
 EXAMPLES
   npx -y github:JuliusBrussee/caveman                        # default install
   npx -y github:JuliusBrussee/caveman -- --all               # all the trimmings
-  npx -y github:JuliusBrussee/caveman -- --only claude --no-mcp-shrink
+  npx -y github:JuliusBrussee/caveman -- --only claude
   npx -y github:JuliusBrussee/caveman -- --uninstall
 
   Issues: https://github.com/${REPO}/issues

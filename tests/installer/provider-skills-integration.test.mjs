@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { nodeStub, stubEnv } from '../../packages/cli/tests/harness/stub-bin.mjs';
+import { nodeStub, stubEnv } from '../harness/stub-bin.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const INSTALLER = path.join(ROOT, 'installer/install.js');

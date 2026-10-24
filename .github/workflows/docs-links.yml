@@ -1,6 +1,5 @@
 name: docs-links
 
-# Package READMEs ship to npm and PyPI, so a dead link there outlives the fix.
 # Weekly as well: docs.caveman.so pages can move without a change here.
 on:
   pull_request:
@@ -9,7 +8,6 @@ on:
       - INSTALL.md
       - SECURITY.md
       - LICENSING.md
-      - packages/middleware/*/CHANGELOG.md
       - docs/technical/**
       - .github/scripts/check-doc-links.mjs
       - .github/workflows/docs-links.yml
@@ -32,6 +30,5 @@ jobs:
         with:
           node-version: 24
       - run: |
-          mapfile -t files < <(git ls-files '*README.md' INSTALL.md SECURITY.md LICENSING.md 'docs/technical/*.md' \
-            packages/middleware/typescript/CHANGELOG.md packages/middleware/python/CHANGELOG.md)
+          mapfile -t files < <(git ls-files '*README.md' INSTALL.md SECURITY.md LICENSING.md 'docs/technical/*.md')
           node .github/scripts/check-doc-links.mjs "${files[@]}"

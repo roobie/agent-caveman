@@ -139,7 +139,6 @@ function runInstaller(root, args, fakeBin, extraEnv = {}) {
   const r = spawnSync(process.execPath, [
     INSTALLER, ...args,
     '--config-dir', path.join(root, 'claude'),
-    '--no-mcp-shrink',
   ], {
     env: {
       ...baseEnv,

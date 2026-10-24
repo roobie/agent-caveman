@@ -5,9 +5,7 @@ Caveman save tokens sometimes. Caveman cost tokens sometimes. This page say whic
 ## What the response skill does
 
 The Caveman response skill makes model write shorter output. Skill itself
-does not compress input, context, files, or model thinking tokens. Caveman local
-Engine and proxy are separate components that can compress recoverable input;
-see [Product model](technical/product-model.md).
+does not compress input, context, files, or model thinking tokens.
 
 ## The measured numbers
 
@@ -46,7 +44,7 @@ Other people's runs, not ours. Each names the skill version it tested. Caveman 3
 - **edubraqd** ([#733 comment, 2026-09-14](https://github.com/JuliusBrussee/caveman/issues/733#issuecomment-5657222190)): 10 dev questions in pt-BR, `haiku-4-5`, 20 replies per arm, pre-3.0 SKILL.md at the `full` level. On top of a CLAUDE.md that already asks for terse replies, caveman cut output 8% (median −5%, stdev 25%). Separately, across 662 Claude Code sessions, output was 0.3% of all tokens and caveman's net effect on the bill was within ±0.2%.
 - **JetBrains** ([blog, July 2026](https://blog.jetbrains.com/ai/2026/07/speak-to-ai-agents-like-cavemen-tosave-tokens/)): 86 real coding tasks, paired A/B. 8.5% fewer output tokens, no measurable quality loss (p = 0.82).
 
-Common thread: output shrink, but an agent run's bill is mostly input and cache re-reads, which an output-style rule cannot touch. The [proxy](../README.md#read-less-332-fewer-input-tokens) goes after that input instead.
+Common thread: output shrink, but an agent run's bill is mostly input and cache re-reads, which an output-style rule cannot touch.
 
 ## Measure it yourself
 

@@ -59,7 +59,6 @@ function parseWindowsNodeShim(source) {
 // package whose bin is an .exe (Claude Code ships one), and pnpm's
 // `@"<target>" %*` form, drive-absolute when the store is on another drive.
 // The executable is run directly, so no batch syntax is evaluated here either.
-// Same as parseWindowsExeShim in packages/cli/src/portable-command.ts.
 function parseWindowsExeShim(source) {
   for (const line of source.split(/\r?\n/)) {
     const match = line.match(/^[ \t]*@?"(?:%(?:dp0%|~dp0)\\?([^"\r\n]+\.exe)|([A-Za-z]:[\\/][^"\r\n]+\.exe))"[ \t]+%\*[ \t]*$/i);

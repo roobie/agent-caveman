@@ -50,7 +50,7 @@ exit 22
   fs.writeFileSync(path.join(configDir, 'hooks', 'caveman-config.js'), '// previous install\n');
   const run = (args = ['--with-hooks'], extraEnv = {}, cwd = undefined) => spawnSync(process.execPath, [
     path.join(root, 'installer', 'install.js'),
-    '--only', 'claude', ...args, '--config-dir', configDir, '--non-interactive', '--no-mcp-shrink',
+    '--only', 'claude', ...args, '--config-dir', configDir, '--non-interactive',
   ], {
     env: { ...isolatedEnv(path.join(root, 'home'), [fakeBin]), CLAUDE_CONFIG_DIR: configDir, ...extraEnv },
     encoding: 'utf8',

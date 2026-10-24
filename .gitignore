@@ -19,14 +19,7 @@ tmp-starcharts/
 
 # Engine stack build artifacts
 node_modules/
-bin/caveman-engine
-bin/caveman-proxy
-bin/caveman-wasm
 */dist/
-packages/*/dist/
-packages/sdk/typescript/dist/
-packages/middleware/typescript/dist/
-packages/shared/*/dist/
 skills/*/dist/
 *.egg-info/
 extension/engine.wasm
@@ -42,5 +35,3 @@ docs/plans/
 .artifacts/
 *.samples.jsonl
 # Python build output — never a source of truth.
-packages/sdk/python/build/
-packages/middleware/python/build/

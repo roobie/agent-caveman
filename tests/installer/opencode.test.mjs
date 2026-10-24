@@ -44,7 +44,7 @@ function shimOpencode() {
 
 function runInstaller(args, env) {
   const configDir = path.join(env.XDG_CONFIG_HOME, 'claude-test');
-  return spawnSync(process.execPath, [INSTALLER, ...args, '--config-dir', configDir, '--non-interactive', '--no-mcp-shrink'], {
+  return spawnSync(process.execPath, [INSTALLER, ...args, '--config-dir', configDir, '--non-interactive'], {
     env, encoding: 'utf8',
   });
 }

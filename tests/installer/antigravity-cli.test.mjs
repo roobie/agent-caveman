@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { nodeStub, stubEnv } from '../../packages/cli/tests/harness/stub-bin.mjs';
+import { nodeStub, stubEnv } from '../harness/stub-bin.mjs';
 import { isolatedEnv } from './_isolated-env.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');

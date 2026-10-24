@@ -30,7 +30,7 @@ function freshHome() {
 }
 
 function runInstaller(args, hermesHome) {
-  return spawnSync(process.execPath, [INSTALLER, ...args, '--config-dir', path.join(hermesHome, '.claude-test'), '--non-interactive', '--no-mcp-shrink'], {
+  return spawnSync(process.execPath, [INSTALLER, ...args, '--config-dir', path.join(hermesHome, '.claude-test'), '--non-interactive'], {
     env: { ...isolatedEnv(path.join(hermesHome, 'home')), HERMES_HOME: hermesHome },
     encoding: 'utf8',
   });
@@ -185,7 +185,7 @@ for (const [name, override] of [
     const home = freshHome();
     const cwd = freshHome();
     try {
-      const r = spawnSync(process.execPath, [INSTALLER, '--only', 'hermes', '--config-dir', path.join(home, '.claude-test'), '--non-interactive', '--no-mcp-shrink'], {
+      const r = spawnSync(process.execPath, [INSTALLER, '--only', 'hermes', '--config-dir', path.join(home, '.claude-test'), '--non-interactive'], {
         cwd,
         env: { ...isolatedEnv(home), CAVE_TEST_HERMES_ROOT: home, HERMES_HOME: override },
         encoding: 'utf8',

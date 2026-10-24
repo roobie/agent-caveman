@@ -95,7 +95,7 @@ test("root installer unwraps the Node.js npm npx.cmd variable form", () => {
   });
 });
 
-// npm.cmd has the same shape; `npm view` (--with-mcp-shrink) runs through it.
+// npm.cmd has the same shape.
 test("root installer unwraps the Node.js npm npm.cmd variable form", () => {
   const root = mkdtempSync(join(tmpdir(), "caveman-installer-npm-"));
   const shim = join(root, "npm.CMD");

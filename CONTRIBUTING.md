@@ -1,12 +1,10 @@
 # Contributing to Caveman
 
-Thanks for helping make the cave bigger. PRs are welcome: new compressors,
-integrations, agent recipes, bug fixes, docs.
+Thanks for helping make the cave bigger. PRs are welcome: skill wording,
+agent integrations, bug fixes, docs.
 
-A new content-type compressor can add support for CSV, HTML, SQL dumps, notebook
-output, or OpenAPI specs. Each one makes Caveman
-useful to a whole new slice of payloads. Start from an existing one under
-`engine/` and copy its shape.
+A new agent integration is one entry in the `PROVIDERS` array of
+`installer/install.js`. Read `CLAUDE.md` first.
 
 ## Sign your commits (DCO)
 
@@ -30,19 +28,14 @@ Apache-2.0 terms. Simple.
 
 Open a pull request against this repository. A maintainer checks license scope,
 tests, generated artifacts, and security boundaries for affected directory.
-Profile-only changes follow narrower process in
-[`docs/CONTRIBUTING_PROFILES.md`](docs/CONTRIBUTING_PROFILES.md).
 
 Keep generated files in same pull request as their source and retain commit
 authorship and DCO sign-off.
 
 ## Before you open a PR
 
-- Build and test the package you touched (`go test ./...`, `pnpm test`, or
-  `pytest`, depending on the directory).
-- Keep it byte-safe: compressors must round-trip or degrade gracefully. Never
-  silently corrupt a payload. On any parse problem, pass the bytes through
-  untouched.
+- Run the suites: `npm test`, `python3 -m unittest tests.test_hooks tests.test_mode_tracker`,
+  and `python3 tests/verify_repo.py`.
 - Match the surrounding style. Small, focused PRs review fastest.
 
 Questions → open a discussion or ping us at **hello@caveman.so**.

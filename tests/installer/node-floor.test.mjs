@@ -62,7 +62,7 @@ test('a PATH node below the engines floor is not persisted', { skip: process.pla
   try {
     const r = spawnSync(process.execPath, [
       INSTALLER, '--only', 'claude', '--with-hooks', '--skip-skills',
-      '--config-dir', configDir, '--non-interactive', '--no-mcp-shrink',
+      '--config-dir', configDir, '--non-interactive',
     ], {
       env: { ...isolatedEnv(path.join(dir, 'home'), [fakeBin]), CLAUDE_CONFIG_DIR: configDir },
       encoding: 'utf8',
