@@ -2,7 +2,6 @@
 # caveman — uninstaller for the SessionStart + SubagentStart + UserPromptSubmit + SessionEnd hooks
 # Removes: hook files in ~/.claude/hooks, settings.json entries, and the mode state
 # Usage: bash src/hooks/uninstall.sh
-#   or:  bash <(curl -s https://raw.githubusercontent.com/roobie/agent-caveman/main/src/hooks/uninstall.sh)
 set -e
 
 CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"

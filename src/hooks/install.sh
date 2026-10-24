@@ -1,7 +1,6 @@
 #!/bin/bash
 # caveman — one-command hook installer for Claude Code
 # Installs: SessionStart hook (auto-load rules) + SubagentStart hook (subagent mode) + UserPromptSubmit hook (mode tracking)# Usage: bash src/hooks/install.sh
-#   or:  bash <(curl -s https://raw.githubusercontent.com/roobie/agent-caveman/main/src/hooks/install.sh)
 #   or:  bash src/hooks/install.sh --force   (re-install over existing hooks)
 set -e
 

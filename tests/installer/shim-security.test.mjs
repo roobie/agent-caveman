@@ -61,12 +61,19 @@ test("every bootstrap pin names the same release", () => {
   const version = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
   assert.equal(`v${version}`, pins["install.sh"], "installer package version must match the pinned release");
 
-  // README installs from this fork through `npx skills`, so only INSTALL.md carries bootstrap one-liners.
+  // README installs from this fork through `npx skills`, so only INSTALL.md carries the pinned npx install.
   for (const doc of ["INSTALL.md"]) {
     const text = readFileSync(join(root, doc), "utf8");
-    const refs = [...text.matchAll(/raw\.githubusercontent\.com\/roobie\/agent-caveman\/(v[\d.]+)\//g)].map((m) => m[1]);
-    assert.ok(refs.length > 0, `${doc} must carry at least one pinned install one-liner`);
-    for (const ref of refs) assert.equal(ref, pins["install.sh"], `${doc} one-liner pins ${ref}`);
+    const refs = [...text.matchAll(/github:roobie\/agent-caveman#(v[\d.]+)/g)].map((m) => m[1]);
+    assert.ok(refs.length > 0, `${doc} must carry at least one pinned npx install`);
+    for (const ref of refs) assert.equal(ref, pins["install.sh"], `${doc} npx install pins ${ref}`);
+  }
+});
+
+test("docs never promote fetch-and-pipe-into-shell installs", () => {
+  for (const doc of ["README.md", "INSTALL.md", "docs/install-windows.md"]) {
+    const text = readFileSync(join(root, doc), "utf8");
+    assert.doesNotMatch(text, /\|\s*(bash|sh|iex)\b/, `${doc} pipes a download into a shell`);
   }
 });
 

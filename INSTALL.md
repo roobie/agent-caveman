@@ -2,23 +2,17 @@
 
 One install. Works for every AI coding agent on your machine.
 
-If just want it to work, run the one-liner. If want to know what gets touched, scroll down.
+If just want it to work, run the command below. If want to know what gets touched, scroll down.
 
-## One-liner
+## Quick install
 
-**macOS / Linux / WSL / Git Bash**
+Same command on macOS, Linux, WSL, and Windows. Needs Node.js.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.sh | bash
+npx --allow-git=root -y github:roobie/agent-caveman#v5.0.1
 ```
 
-**Windows (PowerShell 5.1+)**
-
-```powershell
-irm https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.ps1 | iex
-```
-
-> Piping a script straight into a shell runs it sight-unseen. If you'd rather read it first, download then run: `curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.sh -o install.sh` (review it) `&& bash install.sh`. Bootstrap, package, skill, and hook downloads stay pinned to that release tag, never the moving `main` branch. Hook files are checked against a SHA-256 list from the same tag: that catches a broken or partial download, not a tag that was moved. If that list can't be fetched or any file fails it, no hook is installed and your settings stay as they were. Runtime binaries are checked against a checksum list signed with a key built into the CLI. Set `CAVEMAN_REF` only when intentionally testing another ref.
+This project never asks you to pipe a downloaded script into a shell. Package, skill, and hook downloads stay pinned to that release tag, never the moving `main` branch. Hook files are checked against a SHA-256 list from the same tag: that catches a broken or partial download, not a tag that was moved. If that list can't be fetched or any file fails it, no hook is installed and your settings stay as they were. Set `CAVEMAN_REF` only when intentionally testing another ref.
 
 What it does:
 
@@ -30,14 +24,14 @@ What it does:
 Want to preview before installing? Use `--dry-run`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.sh | bash -s -- --dry-run
+npx --allow-git=root -y github:roobie/agent-caveman#v5.0.1 -- --dry-run
 ```
 
 ## Per-agent install
 
 If you want to install for one agent (or want to know exactly what command runs under the hood), use the table below. Every row also works as `--only <id>` to the unified installer.
 
-> **On npm 12 or newer, add `--allow-git=root` to any bare `npx -y github:...` command below.** npm 12 turns off git package fetches by default, so a plain `npx -y github:roobie/agent-caveman` stops with `npm error code EALLOWGIT`. The flag opts in just the one package you asked for: `npx --allow-git=root -y github:roobie/agent-caveman -- --only <id>`. Check with `npx --version`. `install.sh` and `install.ps1` detect the npm major and add the flag themselves starting with `v3.2.0`, so the one-liners above (pinned to `v5.0.0`) work on npm 12. **One-liners pinned to `v3.1.0` or older download shims that predate that change and keep failing on npm 12**: switch the tag to `v5.0.0`, or install with the flag directly: `npx --allow-git=root -y github:roobie/agent-caveman#v5.0.0 -- --only <id>`.
+> **On npm 12 or newer, add `--allow-git=root` to any bare `npx -y github:...` command below.** npm 12 turns off git package fetches by default, so a plain `npx -y github:roobie/agent-caveman` stops with `npm error code EALLOWGIT`. The flag opts in just the one package you asked for: `npx --allow-git=root -y github:roobie/agent-caveman -- --only <id>`. Check with `npx --version`. Pin a release with `#v5.0.1`: `npx --allow-git=root -y github:roobie/agent-caveman#v5.0.1 -- --only <id>`.
 
 > **Choose the install scope your agent reads.** `-g` installs into the agent's user skill directory. Without it, skills belong to the current project. The unified installer uses user scope except for Replit, whose documented filesystem location is the project's `.agents/skills`. Run Replit's command from that project's Shell. Replit workspace-wide skills are managed in Workspace Settings.
 
@@ -288,7 +282,7 @@ A dev container has its own home folder. Caveman installed on your laptop (`~/.c
 
 Swap `codex` for your agent's profile from the table above. Claude Code inside a container needs its own install too: run the Claude Code plugin commands, or the installer, inside the container.
 
-## Manual install (no `curl | bash`)
+## Manual install (from a clone)
 
 If you'd rather see exactly what runs:
 
@@ -476,9 +470,8 @@ resume. If you still see it, check whether `CAVEMAN_DEFAULT_MODE` or a repo-loca
 
 **"Hooks failing on Windows."**
 
-- Use `install.ps1`, not `install.sh`. Git Bash works for the shell version, but the hook side wires PowerShell counterparts (`caveman-statusline.ps1`).
 - PowerShell 5.1 minimum. Check with `$PSVersionTable.PSVersion`.
-- If `irm | iex` blocks on execution policy: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` for the install session, then re-run.
+- The hook side wires PowerShell counterparts (`caveman-statusline.ps1`).
 - Long-running issues: see `docs/install-windows.md` in the repo for manual fallback.
 
 **"My `settings.json` got mangled."**
@@ -519,7 +512,7 @@ The installer doesn't phone home. It writes to:
 - `~/.omp/caveman-plugin/` (only with `--only omp`, or auto-detect when `omp` is on `PATH`) — managed OMP plugin package installed through `omp plugin install`.
 - `~/.openclaw/workspace/` (only with `--only openclaw` or `--with-init` when OpenClaw is detected) — the one `--with-init` side-effect outside the cwd.
 
-Installer sends no Caveman telemetry or analytics. Run from a clone or via npx, its own code copies files locally. One exception: run detached from any checkout (the rare curl-fallback path), it downloads hook files from raw.githubusercontent.com pinned to the release tag and checks each against the SHA-256 manifest committed at that same tag before wiring anything. The manifest catches corrupt or partial downloads; because it comes from the same tag, it cannot detect a tag that was moved. Network requests also happen indirectly through per-agent CLIs it shells out to — `claude plugin marketplace add`, `claude plugin install`, `gemini extensions install`, `omp plugin install`, and `npx -y skills add`. Each fetches from its own registry or local plugin manager (Anthropic / GitHub / OMP / npm). Source: [`installer/install.js`](installer/install.js).
+Installer sends no Caveman telemetry or analytics. Run from a clone or via npx, its own code copies files locally. One exception: run detached from any checkout, it downloads hook files from raw.githubusercontent.com pinned to the release tag and checks each against the SHA-256 manifest committed at that same tag before wiring anything. The manifest catches corrupt or partial downloads; because it comes from the same tag, it cannot detect a tag that was moved. Network requests also happen indirectly through per-agent CLIs it shells out to — `claude plugin marketplace add`, `claude plugin install`, `gemini extensions install`, `omp plugin install`, and `npx -y skills add`. Each fetches from its own registry or local plugin manager (Anthropic / GitHub / OMP / npm). Source: [`installer/install.js`](installer/install.js).
 
 After install, skills and hooks stay local. Full data-flow statement: [SECURITY.md](./SECURITY.md).
 

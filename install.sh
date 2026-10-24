@@ -4,10 +4,6 @@
 # Thin wrapper around installer/install.js (the unified Node installer). Every flag
 # you'd pass to installer/install.js can be passed here; we just forward them.
 #
-# One-line install:
-#   curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/roobie/agent-caveman/v5.0.0/install.sh | bash -s -- --all
-#
 # Local clone:
 #   bash install.sh [flags]
 #
@@ -18,7 +14,7 @@
 set -euo pipefail
 
 REPO="roobie/agent-caveman"
-PINNED_REF="${CAVEMAN_REF:-v5.0.0}"
+PINNED_REF="${CAVEMAN_REF:-v5.0.1}"
 
 # Require Node ≥18. nvm is a common path; print a hint if missing.
 if ! command -v node >/dev/null 2>&1; then

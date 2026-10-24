@@ -1,7 +1,6 @@
 # caveman — uninstaller for the SessionStart + SubagentStart + UserPromptSubmit + SessionEnd hooks (Windows PowerShell)
 # Removes: hook files in ~/.claude/hooks, settings.json entries, and the mode state
 # Usage: powershell -ExecutionPolicy Bypass -File src\hooks\uninstall.ps1
-#   or:  irm https://raw.githubusercontent.com/roobie/agent-caveman/main/src/hooks/uninstall.ps1 | iex
 param()
 
 $ErrorActionPreference = "Stop"

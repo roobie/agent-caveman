@@ -1,9 +1,6 @@
 # caveman — one-command hook installer for Claude Code (Windows PowerShell)
 # Installs: SessionStart hook (auto-load rules) + SubagentStart hook (subagent mode) + UserPromptSubmit hook (mode tracking)# Usage: powershell -ExecutionPolicy Bypass -File src\hooks\install.ps1
 #   or:  powershell -ExecutionPolicy Bypass -File src\hooks\install.ps1 -Force
-#   or (remote, no -Force support via pipe):
-#        irm https://raw.githubusercontent.com/roobie/agent-caveman/main/src/hooks/install.ps1 | iex
-#   Note: irm ... | iex cannot pass -Force. For force reinstall, save the file and run with -File.
 param(
     [switch]$Force
 )
