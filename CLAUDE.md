@@ -375,6 +375,7 @@ To reproduce: `uv run python benchmarks/run.py` (needs `ANTHROPIC_API_KEY` in `.
 
 ## Key rules for agents working here
 
+- Cut releases with `node scripts/release.mjs <patch|minor|major|x.y.z> [--commit|--tag|--push]`. It owns the list of files that carry the version; never bump by hand.
 - Edit `skills/<name>/SKILL.md` for behavior changes. Never edit synced copies under `plugins/caveman/skills/`.
 - Edit `src/rules/caveman-activate.md` for auto-activation rule changes. Never edit any per-agent rule copy a user has on their machine.
 - Edit `src/rules/caveman-openclaw-bootstrap.md` for the OpenClaw SOUL.md bootstrap snippet. Keep the `<!-- caveman-begin -->` / `<!-- caveman-end -->` markers and the `Respond terse like smart caveman` sentinel — `installer/lib/openclaw.js` keys idempotency off both. If you change the embedded fallback in `installer/lib/openclaw.js`, keep it byte-equivalent to the file.
