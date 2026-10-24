@@ -48,8 +48,7 @@ Default output stays bounded. Detail never disappears; it moves behind `--all`,
   TUI confirmed-count note points to `caveman learn --all`, which also adds a
   per-repository block. That block reports session count, dumbzone percentage,
   and median context; it does not invent per-repository scores.
-- `caveman learn implement`: select Claude Code or Codex, install missing
-  `caveman-learn` guide, then launch agent with current report and optional user
+- `caveman learn implement`: select Claude Code or Codex, then launch agent with current report and optional user
   focus. Agent asks before every edit. Load-bearing findings are never edited.
 - `caveman status`: one row per module, one column per detected agent, any off
   states, one next action. `--json` keeps every field and adds `modules`.

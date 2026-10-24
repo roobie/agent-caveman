@@ -131,8 +131,6 @@ importers:
 
   shrink: {}
 
-  skills/caveman-learn: {}
-
 packages:
 
   '@a2a-js/sdk@0.3.14':

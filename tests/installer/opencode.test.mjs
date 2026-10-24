@@ -69,7 +69,7 @@ test('opencode fresh install drops plugin, commands, agents, skills, AGENTS.md, 
     assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'caveman', 'caveman-config.cjs')), 'caveman-config.cjs sibling missing');
     assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'caveman', 'caveman-parse.cjs')), 'caveman-parse.cjs sibling missing');
 
-    for (const f of ['caveman.md', 'ultracave.md','caveman-commit.md', 'caveman-review.md', 'caveman-compress.md', 'caveman-stats.md', 'caveman-help.md']) {
+    for (const f of ['caveman.md', 'ultracave.md','caveman-commit.md', 'caveman-review.md', 'caveman-compress.md']) {
       assert.ok(fs.existsSync(path.join(ocDir, 'commands', f)), `command ${f} missing`);
     }
     for (const f of ['cavecrew-investigator.md', 'cavecrew-builder.md', 'cavecrew-reviewer.md']) {
@@ -77,7 +77,7 @@ test('opencode fresh install drops plugin, commands, agents, skills, AGENTS.md, 
       // Subagent-only: keeps cavecrew out of opencode's Tab cycle (#725).
       assert.match(fs.readFileSync(path.join(ocDir, 'agents', f), 'utf8'), /^mode: subagent$/m, `agent ${f} must be mode: subagent`);
     }
-    for (const name of ['caveman', 'ultracave', 'caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew']) {
+    for (const name of ['caveman', 'ultracave', 'caveman-commit', 'caveman-review', 'caveman-compress', 'cavecrew']) {
       assert.ok(fs.existsSync(path.join(ocDir, 'skills', name, 'SKILL.md')), `skill ${name}/SKILL.md missing`);
     }
     assert.ok(fs.existsSync(path.join(ocDir, 'AGENTS.md')), 'AGENTS.md missing');

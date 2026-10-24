@@ -209,7 +209,6 @@ def verify_skill_frontmatter_upload_compatibility() -> None:
         ROOT / "skills/caveman/SKILL.md",
         ROOT / "skills/ultracave/SKILL.md",
         ROOT / "skills/caveman-commit/SKILL.md",
-        ROOT / "skills/caveman-help/SKILL.md",
         ROOT / "skills/caveman-review/SKILL.md",
         ROOT / "skills/caveman-compress/SKILL.md",
     ]
@@ -355,7 +354,7 @@ def verify_manifests_and_syntax() -> None:
 
     # Claude Code loads commands/*.md as flat skills alongside skills/*/SKILL.md,
     # so a .md stub sharing a skill's name registers that name twice — `caveman`,
-    # `caveman-commit`, `caveman-review` and `caveman-stats` each appeared twice
+    # `caveman-commit` and `caveman-review` each appeared twice
     # in `claude plugin details`, with a 3-line stub competing against the real
     # ruleset for the same slash command. The .toml stubs are Codex/Gemini-only
     # and are not scanned.

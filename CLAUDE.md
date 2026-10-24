@@ -65,8 +65,6 @@ caveman/
 │   ├── caveman/{SKILL.md, README.md}
 │   ├── caveman-commit/{SKILL.md, README.md}
 │   ├── caveman-review/{SKILL.md, README.md}
-│   ├── caveman-help/{SKILL.md, README.md}
-│   ├── caveman-stats/{SKILL.md, README.md}
 │   ├── caveman-compress/{SKILL.md, README.md, scripts/}
 │   └── cavecrew/{SKILL.md, README.md}
 │
@@ -125,16 +123,13 @@ caveman/
 | `installer/lib/openclaw.js` | OpenClaw install/uninstall helper. Frontmatter merge (`version`, `always: true`), SOUL.md marker append/strip, idempotent. Shared by `installer/install.js` and `src/tools/caveman-init.js`. |
 | `skills/caveman-commit/SKILL.md` | Caveman commit message behavior. Fully independent skill. |
 | `skills/caveman-review/SKILL.md` | Caveman code review behavior. Fully independent skill. |
-| `skills/caveman-help/SKILL.md` | Quick-reference card. One-shot display, not a persistent mode. |
 | `skills/caveman-compress/SKILL.md` | Compress sub-skill behavior. |
 | `skills/cavecrew/SKILL.md` | Cavecrew decision guide — when to delegate to caveman subagents vs vanilla. Edit only here. |
-| `skills/{caveman-setup,caveman-discover,caveman-learn,caveman-manage,caveman-optimize,caveman-explore,caveman-evidence-review}/SKILL.md` | Engine/proxy driver skills. Ship with the plugin (see the auto-discovery note below). |
-| `skills/{investigate-first,lean-build,surgical-patch,safe-refactor,migration,verify-and-stop}/SKILL.md` | Token-discipline work patterns — same goal as caveman prose (fewer output tokens) applied to code volume rather than wording. Deliberately un-branded so they read as generic patterns to the model. Ship with the plugin. |
 | `agents/cavecrew-investigator.md` | Read-only locator subagent (haiku). Output contract: `path:line — symbol — note`. |
 | `agents/cavecrew-builder.md` | Surgical 1-2 file editor subagent. Refuses 3+ file scope. |
 | `agents/cavecrew-reviewer.md` | Diff/file reviewer subagent (haiku). One-line findings with severity emoji. |
 | `src/plugins/opencode/plugin.js` | opencode native plugin. ESM Bun module — `session.created` writes flag, `tui.prompt.append` parses slash/natural-language activation and appends per-prompt reinforcement. Reuses `caveman-config.js` via `createRequire`. |
-| `src/plugins/opencode/commands/*.md` | Six opencode slash-command prompt templates (`/caveman`, `/caveman-{commit,review,compress,stats,help}`). |
+| `src/plugins/opencode/commands/*.md` | Five opencode slash-command prompt templates (`/caveman`, `/ultracave`, `/caveman-{commit,review,compress}`). |
 
 ### `skills/` is auto-discovered wholesale — every subdirectory ships
 
@@ -170,7 +165,7 @@ if any markdown beyond three intended cavecrew agents appears under `agents/`.
 
 Claude Code loads `commands/*.md` as flat skills alongside `skills/*/SKILL.md`,
 so a stub sharing a skill's name registers that name twice. `caveman.md`,
-`caveman-commit.md`, `caveman-review.md` and `caveman-stats.md` each duplicated
+and `caveman-review.md` each duplicated
 a real skill — a 3-line stub competing with the full ruleset for the same slash
 command — and were removed. The `.toml` stubs are Codex/Gemini-only and are not
 scanned, so `commands/` keeps one `.md`: `caveman-init.md`, which has no skill
@@ -192,7 +187,7 @@ What's left is the Claude Code plugin distribution (required by the plugin loade
 | `plugins/caveman/agents/cavecrew-*.md` | `agents/cavecrew-*.md` |
 | `dist/caveman.skill` | ZIP of `skills/caveman/` directory (gitignored; rebuilt by CI on release) |
 
-Skills not in this table (`caveman-commit`, `caveman-review`, `caveman-help`, `caveman-stats`) are not mirrored into the Claude Code plugin distribution by CI. They reach Claude Code through the standalone hook + skill install path, and reach other agents via `npx skills add`. A `plugins/caveman/skills/caveman-stats/` directory is currently checked in as a hand-committed copy; the sync workflow does not touch it, so don't rely on edits there to propagate.
+Skills not in this table (`caveman-commit`, `caveman-review`) are not mirrored into the Claude Code plugin distribution by CI. They reach Claude Code through the standalone hook + skill install path, and reach other agents via `npx skills add`.
 
 ---
 
@@ -370,7 +365,7 @@ How caveman reaches each agent type:
 | Cline | `npx skills add ... -a cline` (default via `--only cline`); per-repo `.clinerules/caveman.md` via `--with-init` | Yes — Cline auto-discovers `.clinerules/` |
 | Copilot | `npx skills add ... -a github-copilot` (detected via the `copilot` CLI plus its `~/.copilot` dir, since AWS Copilot CLI ships a `copilot` binary too, or the VS Code/Cursor extension); per-repo `.github/copilot-instructions.md` + `AGENTS.md` via `--with-init`. When the Copilot CLI is present (`copilot` on PATH or `$COPILOT_HOME` set — not a bare `~/.copilot`, which `npx skills add -a github-copilot` itself creates) the installer also owns `$COPILOT_HOME/caveman/` (shared hook payload) and `$COPILOT_HOME/hooks/caveman.json` (sessionStart → `caveman-host-session-start.js copilot`); `--no-hooks` skips it. No userPromptSubmitted hook: Copilot drops its output. | Copilot CLI: yes — sessionStart `additionalContext`, honors `defaultMode`. VS Code Copilot Chat: repo-wide instructions via `--with-init` |
 | Grok Build | Owned skill copies into `$GROK_HOME/skills` (default `~/.grok`) plus a marker-fenced ruleset block in `$GROK_HOME/AGENTS.md`, appended/stripped through `installer/lib/openclaw.js`'s marker helpers | Yes — Grok loads `~/.grok/AGENTS.md` as global rules (docs-backed; no live binary run) |
-| Antigravity CLI (`agy`) | `--only antigravity-cli` stages a temp plugin (`plugin.json`, the nine skills, `rules/AGENTS.md` = `src/rules/caveman-activate.md`) and runs `agy plugin install <dir>`; agy copies it to `~/.gemini/config/plugins/caveman/` and owns it. Uninstall: `agy plugin uninstall caveman` when `agy plugin list` names it. No session-start hook exists in agy (PreInvocation fires before every model call), so no `defaultMode`. | Yes — plugin `rules/AGENTS.md` merges into agy's active rule set (verified agy 1.2.17) |
+| Antigravity CLI (`agy`) | `--only antigravity-cli` stages a temp plugin (`plugin.json`, the six skills, `rules/AGENTS.md` = `src/rules/caveman-activate.md`) and runs `agy plugin install <dir>`; agy copies it to `~/.gemini/config/plugins/caveman/` and owns it. Uninstall: `agy plugin uninstall caveman` when `agy plugin list` names it. No session-start hook exists in agy (PreInvocation fires before every model call), so no `defaultMode`. | Yes — plugin `rules/AGENTS.md` merges into agy's active rule set (verified agy 1.2.17) |
 | Continue, AiderDesk, Antigravity IDE/2.0 | Owned physical copies into each vendor's supported directory, honoring configured homes; separate explicit targets for the two Antigravity products | Host skill invocation; feature settings may be required |
 | Others (Junie, Trae, Warp, Tabnine, Mistral, Qwen, Devin, Droid, ForgeCode, Bob, Crush, iFlow, OpenHands, Qoder, Rovo Dev, Replit, …) | Delegated `npx skills` personal installs; Replit uses project scope. Configured iFlow/Crush roots use owned copies | Host skill invocation; `/caveman` where supported |
 

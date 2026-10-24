@@ -203,7 +203,7 @@ mint verified savings.
 
 Install complete native Caveman integration into Codex or Claude Code: local
 routing, lifecycle hooks, architecture-first Core, recovery MCP, project-scoped
-read tools, and setup/discovery/review/optimization/management skills:
+and read tools:
 
 ```sh
 caveman setup --agent-native codex
@@ -257,8 +257,8 @@ Inspect before install:
 
 ```sh
 caveman tools skills list --json
-caveman tools skills preview caveman-evidence-review
-caveman tools skills install --suite agent-native --agent codex --no-pixel
+caveman tools skills preview caveman
+caveman tools skills install --suite output --agent codex --no-pixel
 caveman tools mcp install codex --server caveman-cloud
 ```
 

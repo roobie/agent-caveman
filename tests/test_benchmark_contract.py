@@ -51,7 +51,6 @@ class BenchmarkContractTests(unittest.TestCase):
         banned = {
             "README.md": ["46% smaller"],
             "docs/HONEST-NUMBERS.md": ["~46%"],
-            "skills/caveman-help/SKILL.md": ["~46%"],
             "skills/caveman-compress/README.md": ["46%", "59.6%"],
             "skills/cavecrew/SKILL.md": ["~700 tokens"],
             "agents/cavecrew-investigator.md": ["60% fewer"],

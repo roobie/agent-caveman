@@ -1131,7 +1131,7 @@ function installCopilotCliHook(ctx) {
 
 // ── hermes native install ──────────────────────────────────────────────────
 // Drops the caveman skills into ~/.hermes/skills/productivity/ (or HERMES_HOME if set).
-const HERMES_SKILL_DIRS = ['caveman', 'ultracave','caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew'];
+const HERMES_SKILL_DIRS = ['caveman', 'ultracave','caveman-commit', 'caveman-review', 'caveman-compress', 'cavecrew'];
 
 function hermesConfigDir() {
   // Hermes uses ~/.hermes by default, or HERMES_HOME env var. Hermes 0.21.5 reads
@@ -1257,9 +1257,9 @@ function installAntigravityCli(ctx) {
 // opencode.json with a "plugin" array entry. Mirrors the Claude Code hook
 // architecture as closely as opencode allows — only the statusline is missing
 // (opencode's TUI exposes no plugin-writable badge).
-const OPENCODE_SKILL_DIRS  = ['caveman', 'ultracave','caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew'];
+const OPENCODE_SKILL_DIRS  = ['caveman', 'ultracave','caveman-commit', 'caveman-review', 'caveman-compress', 'cavecrew'];
 const OPENCODE_AGENT_FILES = ['cavecrew-investigator.md', 'cavecrew-builder.md', 'cavecrew-reviewer.md'];
-const OPENCODE_COMMAND_FILES = ['caveman.md', 'ultracave.md','caveman-commit.md', 'caveman-review.md', 'caveman-compress.md', 'caveman-stats.md', 'caveman-help.md'];
+const OPENCODE_COMMAND_FILES = ['caveman.md', 'ultracave.md','caveman-commit.md', 'caveman-review.md', 'caveman-compress.md'];
 // The directory: opencode 1.x imports it through its package.json main
 // (plugin.js), opencode 2.x loads its server.js. A plugin.js entry worked on
 // 1.x only and made 2.x warn "configured plugin path must be a directory".
@@ -2623,7 +2623,7 @@ function uninstall(ctx) {
     ok('uninstall done.');
   }
   // Not run for the user: `skills remove` deletes same-named skill folders in
-  // every agent's directory, and generic names (migration, lean-build) can be
+  // every agent's directory, and generic skill names can be
   // the user's own. Run by hand it lists the names and asks first.
   ok('skills added by `npx skills` (Cursor/Windsurf/Cline/etc.) stay. To remove them:');
   ok('  npx skills remove JuliusBrussee/caveman -g   (lists the skills and asks first)');
@@ -2826,7 +2826,6 @@ async function main() {
   }
   process.stdout.write('\n');
   ctx.note("  start any session and say 'caveman mode', or run /caveman in Claude Code");
-  ctx.note('  measure what caveman save you: run /caveman-stats');
   ctx.note('  verified team savings coming soon — join waitlist: https://caveman.so');
   ctx.note(`  uninstall: npx -y github:${REPO} -- --uninstall`);
 

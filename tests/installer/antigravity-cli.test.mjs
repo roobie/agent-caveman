@@ -15,7 +15,7 @@ import { isolatedEnv } from './_isolated-env.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const INSTALLER = path.join(ROOT, 'installer/install.js');
-const SKILLS = ['caveman', 'ultracave','caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew'];
+const SKILLS = ['caveman', 'ultracave','caveman-commit', 'caveman-review', 'caveman-compress', 'cavecrew'];
 
 function fixture(t) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'caveman agy '));

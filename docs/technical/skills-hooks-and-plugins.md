@@ -29,15 +29,7 @@ prove a token-reduction percentage. See
 |---|---|---|
 | `caveman-commit` | Terse Conventional Commit message | Does not stage, commit, or amend |
 | `caveman-review` | Line-scoped review findings | Does not approve, request changes, or run linters |
-| `caveman-help` | One-shot command card | Does not change active mode |
-| `caveman-stats` | Session usage plus labeled estimates | Reads local Claude Code session logs and writes status suffix |
 | `caveman-compress` | Shortened supported memory file plus backup | Reads, validates, and writes selected local file |
-| `caveman-learn` | Consent-gated review of local findings | Applies only operator-approved edits |
-| `caveman-explore` | Read-only `path:line` citations | Installs a restricted explorer agent |
-
-`caveman-stats` mixes direct session counts with explicitly estimated baseline
-and rule-overhead fields. Estimated net can be negative. See evidence basis on
-each line instead of treating whole output as measured.
 
 `caveman-compress` preserves original in data-directory backup and validates
 headings, code blocks, URLs, paths, and list structure. Those checks do not prove

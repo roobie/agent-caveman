@@ -13,7 +13,7 @@ import { cloudConfigPath } from "./modules/config-home.js";
 
 type NativeAgent = "claude" | "codex" | "hermes" | "gemini" | "opencode" | "pi";
 type NativePolicyMode = "record" | "safe" | "max";
-type NativeProfile = "record-only" | "core" | "core-lean-build" | "ledger" | "ccr-masking" | "cache-aware" | "full-safe" | "full-max";
+type NativeProfile = "record-only" | "core" | "ledger" | "ccr-masking" | "cache-aware" | "full-safe" | "full-max";
 type RuntimeResponse = {
   protocol_version: 1;
   policy_mode?: NativePolicyMode;
@@ -28,7 +28,7 @@ type RuntimeResponse = {
   fail_open: true;
 };
 
-const PROFILES = new Set<NativeProfile>(["record-only", "core", "core-lean-build", "ledger", "ccr-masking", "cache-aware", "full-safe", "full-max"]);
+const PROFILES = new Set<NativeProfile>(["record-only", "core", "ledger", "ccr-masking", "cache-aware", "full-safe", "full-max"]);
 const ACTIONS = new Set(["allow", "observe", "block", "ask", "defer"]);
 const VISIBILITY = new Set(["silent", "advisory", "user"]);
 const EVENTS = new Set(["SessionStart", "UserPromptSubmit", "PreToolUse", "PermissionRequest", "PostToolUse", "PostToolUseFailure", "ModelBefore", "ModelAfter", "PreCompact", "PostCompact", "SubagentStart", "SubagentStop", "Stop", "SessionEnd"]);

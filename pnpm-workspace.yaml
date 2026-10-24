@@ -11,4 +11,3 @@ packages:
   - "shared/provider-catalog"
   - "packages/subagent-tax"
   - "shrink"
-  - "skills/caveman-learn"

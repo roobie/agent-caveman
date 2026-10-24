@@ -144,7 +144,7 @@ for install and uninstall.
 ### Oh My Pi (OMP)
 
 With `omp` on your PATH, run `node installer/install.js --only omp` from this clone,
-then restart OMP. The native plugin adds nine skills, eight commands, Cavecrew
+then restart OMP. The native plugin adds six skills, five commands, Cavecrew
 presets, a CAVEMAN badge, and Caveman instructions on each agent turn. Commands
 such as `/ultracave` and `stop caveman` instruct the model; the badge indicates
 that the plugin is loaded. Host lifecycle and prompt delivery were checked with
@@ -390,7 +390,7 @@ ls "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.caveman-sessions/"
 A window where you said "stop caveman" stores `off` and stays off — including
 across the automatic context compaction that happens in long sessions.
 
-Statusline should show `[CAVEMAN]` (orange) at the bottom of Claude Code. `/caveman-stats` reports recorded usage; savings remain unknown without a measured comparison.
+Statusline should show `[CAVEMAN]` (orange) at the bottom of Claude Code. Usage is recorded when each session ends; savings remain unknown without a measured comparison. `caveman stats` shows the history.
 
 ## Update
 

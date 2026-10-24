@@ -391,11 +391,3 @@ available locally.
   temporary file that is deleted afterwards); see
   [`skills/caveman-compress/SECURITY.md`](./skills/caveman-compress/SECURITY.md#auth-behavior).
   Text either skill keeps verbatim is text you already gave the model.
-- Skill scanners (Snyk Agent Scan, `npx skills` risk ratings) can rate
-  `caveman-setup` high risk because it handles a credential. It is the Caveman
-  Cloud onboarding skill. It acts only when you ask it to set up the gateway and
-  supply `CAVE_API_KEY`. It puts that key in the env file your repo already
-  uses, makes sure that file is gitignored, never prints the key in full, and
-  points LLM callsites at the gateway URL you give it. If you do not use Caveman
-  Cloud, install only the core skill:
-  `npx skills add JuliusBrussee/caveman --skill caveman`.

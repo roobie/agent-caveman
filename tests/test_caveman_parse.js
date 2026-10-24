@@ -437,7 +437,7 @@ test('expandedTpl: no non-activation opencode template switches a prose mode', (
     }
     checked.push(file);
   }
-  for (const f of ['caveman-help.md', 'caveman-commit.md', 'caveman-review.md', 'caveman-compress.md', 'caveman-stats.md']) {
+  for (const f of ['caveman-commit.md', 'caveman-review.md', 'caveman-compress.md']) {
     assert.ok(checked.includes(f), `${f} not checked`);
   }
 });

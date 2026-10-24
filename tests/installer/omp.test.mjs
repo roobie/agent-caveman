@@ -57,8 +57,8 @@ if (args[1] === 'uninstall') {
 const OMP_SHIM_BODY = process.platform === 'win32'
   ? `@echo off\r\nendLocal & "%_prog%" "%dp0%\\${OMP_SHIM_SCRIPT_NAME}" %*\r\n`
   : `#!/bin/sh\nexec ${JSON.stringify(process.execPath)} "$(dirname "$0")/${OMP_SHIM_SCRIPT_NAME}" "$@"\n`;
-const OMP_SKILLS = ['caveman', 'caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew'];
-const OMP_COMMANDS = ['caveman.md', 'caveman-commit.md', 'caveman-review.md', 'caveman-compress.md', 'caveman-stats.md', 'caveman-help.md'];
+const OMP_SKILLS = ['caveman', 'caveman-commit', 'caveman-review', 'caveman-compress', 'cavecrew'];
+const OMP_COMMANDS = ['caveman.md', 'caveman-commit.md', 'caveman-review.md', 'caveman-compress.md'];
 const OMP_AGENTS = ['cavecrew-investigator.md', 'cavecrew-builder.md', 'cavecrew-reviewer.md'];
 const EXISTING_MARKER = 'existing package must survive failed install';
 

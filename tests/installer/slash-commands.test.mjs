@@ -8,7 +8,7 @@
 // The Claude Code half is an EXCLUSIVE or. Claude Code loads commands/*.md as
 // flat skills in the same namespace as skills/*/SKILL.md, so shipping both for
 // one name registers it twice — `claude plugin details` listed `caveman`,
-// `caveman-commit`, `caveman-review` and `caveman-stats` twice each, with a
+// `caveman-commit` and `caveman-review` twice each, with a
 // 3-line stub competing against the real ruleset for the same slash command.
 // #571 predates skills/ being auto-discovered from the plugin root; the stubs
 // were the only registration then and are pure duplication now.
@@ -28,46 +28,13 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(HERE, '..', '..');
 const COMMANDS_DIR = path.join(REPO_ROOT, 'commands');
-const STATS_TOML = path.join(COMMANDS_DIR, 'caveman-stats.toml');
-
-// Mirrors the live regex in src/hooks/caveman-mode-tracker.js (the
-// `statsMatch` line). Anything that fails this here would also fail in
-// production, so the test stays representative if the hook regex shifts.
-const HOOK_STATS_REGEX = /^\/caveman(?::caveman)?-stats(?:\s+(.*))?$/m;
-
-test('#470 commands/caveman-stats.toml registers the Gemini extension command', () => {
-  assert.ok(
-    fs.existsSync(STATS_TOML),
-    `Missing ${path.relative(REPO_ROOT, STATS_TOML)} — Gemini CLI cannot discover this extension command (issue #470).`,
-  );
-});
-
-test('#470 caveman-stats.toml declares a non-empty description for the slash-command picker', () => {
-  const body = fs.readFileSync(STATS_TOML, 'utf8');
-  const descMatch = body.match(/^\s*description\s*=\s*"([^"\n]+)"/m);
-  assert.ok(descMatch, 'caveman-stats.toml must declare a description = "..." line');
-  assert.ok(descMatch[1].trim().length > 0, 'description must not be empty');
-});
-
-test('#403 Gemini stats command uses native host statistics without entering the Claude hook path', () => {
-  const body = fs.readFileSync(STATS_TOML, 'utf8');
-  const promptMatch = body.match(/^\s*prompt\s*=\s*"([^"\n]+)"/m);
-  assert.ok(promptMatch, 'caveman-stats.toml must declare a prompt = "..." line');
-  const prompt = promptMatch[1].replace(/\{\{args\}\}/g, '').trim();
-  assert.match(prompt, /\/stats model/);
-  assert.match(prompt, /\/stats session/);
-  assert.match(prompt, /cannot invoke a built-in slash command or access the host's live metrics/);
-  assert.match(prompt, /Do not run the Claude Code caveman-stats reader/);
-  assert.match(prompt, /savings are unknown/);
-  assert.doesNotMatch(prompt, HOOK_STATS_REGEX);
-});
 
 // ── #571: Claude Code only discovers commands/*.md ─────────────────────────
 
 // Every command documented for Claude Code. Each needs a .toml (Gemini
 // extension) plus exactly one Claude Code provider — a skill directory or a
 // flat command .md, never both.
-const DOCUMENTED_COMMANDS = ['caveman', 'caveman-commit', 'caveman-review', 'caveman-stats', 'caveman-init'];
+const DOCUMENTED_COMMANDS = ['caveman', 'caveman-commit', 'caveman-review', 'caveman-init'];
 const SKILLS_DIR = path.join(REPO_ROOT, 'skills');
 
 for (const name of DOCUMENTED_COMMANDS) {
@@ -96,20 +63,6 @@ for (const name of DOCUMENTED_COMMANDS) {
     );
   });
 }
-
-// The stub bodies used to be checked against this regex on the theory that
-// Claude Code expanded them before the hook ran. It does not — UserPromptSubmit
-// receives the raw text the user typed (verified on 2.1.235), in both the bare
-// and plugin-namespaced forms. That is what the handler must match.
-test('#571 mode tracker intercepts /caveman-stats as typed, bare and namespaced', () => {
-  for (const typed of ['/caveman-stats', '/caveman-stats --share', '/caveman:caveman-stats']) {
-    assert.match(
-      typed,
-      HOOK_STATS_REGEX,
-      `The UserPromptSubmit handler regex in src/hooks/caveman-mode-tracker.js must match ${JSON.stringify(typed)}; otherwise the stats output is never injected.`,
-    );
-  }
-});
 
 test('#571 command .md bodies use $ARGUMENTS, never the TOML {{args}} placeholder', () => {
   for (const mdPath of fs.readdirSync(COMMANDS_DIR).filter(f => f.endsWith('.md'))) {

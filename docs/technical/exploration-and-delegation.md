@@ -22,12 +22,6 @@ Install for current user:
 cave explore install --user
 ```
 
-`explore` is legacy alias for:
-
-```bash
-caveman tools skills install caveman-explore --no-pixel
-```
-
 Current installer supports Claude Code. Codex integration is withheld until
 transcript isolation has dedicated proof.
 

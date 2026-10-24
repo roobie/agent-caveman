@@ -12,7 +12,7 @@ You get:
 - a local HTML report and a JSON file.
 
 It never edits your files. Fixes happen inside Claude Code or Codex, through
-the `caveman-learn` skill, one edit at a time, and only after you say yes.
+`caveman learn implement`, one edit at a time, and only after you say yes.
 
 Every number is an estimate from your own history (`inferred` in JSON). No
 local number is promoted to `verified`; see
@@ -93,7 +93,7 @@ All paths are under `$CAVEMAN_HOME` (default `~/.caveman`) unless noted.
 | `learn export` | `reports/caveman-learn-digest.json` (or `--out <path>`) |
 | Autopilot | `runtime/learn-autopilot.json`, `.lock`, `-nudge.json`, `-nudge.inflight.json`, `-announced.json`, and its own report, snapshots and trend history under `runtime/learn-autopilot/reports/` |
 | `learn autopilot on/off` | key `learnAutopilot` in `~/.caveman-cloud/config.json` |
-| `learn implement` | the skill file, only if missing: `./.claude/skills/caveman-learn/SKILL.md` (Claude Code) or `$CODEX_HOME/skills/caveman-learn/SKILL.md` (Codex) |
+| `learn implement` | nothing; it only opens the agent with the report |
 
 Report files are created with mode `0600`.
 
@@ -121,7 +121,7 @@ The default window is `--since 30d`. The scan times out after 120 s
 | `--sources <list>` | Any of `claude,codex,gemini,opencode,aider,pi`. Default: all. |
 | `--repo <substring>` | Keep only sessions whose repository matches, before any detector runs. Config is still read from the current directory. |
 | `--retro` | Adds the "would have saved" replay block (`retro`). Budgets: `--behavior-budget-ms`, `--retro-budget-ms`. Omitted when `--repo` is set. |
-| `implement [claude\|codex] [--prompt "<focus>"]` | Opens the agent with the `caveman-learn` skill and the current report. |
+| `implement [claude\|codex] [--prompt "<focus>"]` | Opens the agent with the current report. |
 | `apply <sink_id> [--dry-run]` | Materializes a candidate for a `reducible` or `recurring_context` sink. Edits nothing. |
 | `applied <sink_id> [--fix-kind <k>] [--note <t>]` | Records an approved, re-measured fix in the outcome ledger. |
 | `simulate <sink_id...>` | Token counterfactual over scanned history only. |
@@ -357,8 +357,7 @@ A trend is not a saving and does not show what caused the change.
 ### The consent loop
 
 `caveman learn implement` (or the TUI's "Implement with agent") opens Claude
-Code or Codex with the `caveman-learn` skill, installing it if missing. The
-skill:
+Code or Codex with the current report and these instructions. The agent:
 
 1. Reads `caveman learn report --json` and shows the score, components and
    ranked sinks.
@@ -375,9 +374,6 @@ skill:
 `load_bearing` sinks are never edited. `procedure_repeat` candidates skip the
 gate and go to an experiment instead, because a skill adds prefix tokens every
 session and pays back only on some.
-
-You can install the skill directly: `caveman tools skills install caveman-learn`
-(add `--user` for all repos, `--agent codex` for Codex).
 
 ### Applied ledger and verdicts
 

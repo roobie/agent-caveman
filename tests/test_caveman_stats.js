@@ -1200,7 +1200,7 @@ test('mixed legacy history preserves output totals without net claims', (tmp) =>
 // Ground truth comes from running the real hook rather than from a second
 // hardcoded string, so this case cannot pass a doc that agrees with a contract
 // the code has moved off.
-test('caveman-stats docs describe the delivery mechanism the hook actually uses', (tmp) => {
+test('the hook delivers /caveman-stats through additionalContext, never decision:block', (tmp) => {
   const sess = makeSession(tmp, [
     { type: 'assistant', message: { usage: { output_tokens: 100 } } },
   ]);
@@ -1217,30 +1217,6 @@ test('caveman-stats docs describe the delivery mechanism the hook actually uses'
   assert.ok(parsed.hookSpecificOutput && parsed.hookSpecificOutput.additionalContext,
     'ground truth: the hook delivers through additionalContext');
 
-  for (const rel of ['skills/caveman-stats/SKILL.md', 'skills/caveman-stats/README.md']) {
-    const doc = fs.readFileSync(path.join(ROOT, rel), 'utf8');
-    assert.ok(!/decision:\s*"?block/i.test(doc) && !/blocked-decision/i.test(doc),
-      `${rel} still describes the retired decision:"block" delivery`);
-    assert.ok(!/does not need to do anything/i.test(doc),
-      `${rel} still tells the model to do nothing, while the hook asks it to print the block`);
-    assert.match(doc, /additionalContext/,
-      `${rel} must name the additionalContext delivery the hook actually uses`);
-  }
-});
-
-// The same #789 report also flagged the `hooks/…` paths in these docs. They are
-// not wrong — the installer copies HOOK_FILES into $CLAUDE_CONFIG_DIR/hooks/,
-// so that IS the installed layout — but they leave a repo reader with no path
-// that exists here. Both spellings have to be reachable, so pin that the doc
-// names the repo source and that the file is really there.
-test('caveman-stats docs point a repo reader at a path that exists', () => {
-  const doc = fs.readFileSync(path.join(ROOT, 'skills/caveman-stats/SKILL.md'), 'utf8');
-  const referenced = [...doc.matchAll(/`(src\/hooks\/[A-Za-z0-9._-]+)`/g)].map(m => m[1]);
-  assert.ok(referenced.includes('src/hooks/caveman-stats.js'),
-    'SKILL.md must name the repo source of the stats script');
-  for (const rel of referenced) {
-    assert.ok(fs.existsSync(path.join(ROOT, rel)), `SKILL.md references a missing path: ${rel}`);
-  }
 });
 
 // Third site of the same #789 root cause: when the stats script cannot run, the

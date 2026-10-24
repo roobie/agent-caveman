@@ -275,11 +275,7 @@ In your agent:
 | `/caveman-commit` | One-line Conventional Commit |
 | `/caveman-review` | One finding per line: `L42: 🔴 null deref. Guard it.` |
 | `/caveman-compress <file>` | Shrinks memory files and backs up the original |
-| `/caveman-stats` | Real token usage for this Claude Code session |
-| `/caveman-help` | Every mode and command on one screen |
 | `cavecrew` | Subagents that find, edit, and review code, then report back in caveman |
-| `investigate-first` · `lean-build` · `surgical-patch` · `safe-refactor` · `migration` · `verify-and-stop` | Work patterns that write less code. Your agent picks them up when a task fits |
-| `caveman-setup` · `caveman-discover` · `caveman-learn` · `caveman-manage` · `caveman-optimize` · `caveman-explore` · `caveman-evidence-review` | Drive the proxy from inside your agent |
 
 ## Caveman Cloud
 

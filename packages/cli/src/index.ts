@@ -59,7 +59,7 @@ import {
   AGENT_SKILL_METADATA,
   AGENT_SKILL_SUITES,
 } from "./agent-skills.generated.js";
-import { NATIVE_CORE, NATIVE_PACK, NATIVE_SKILL_INSTRUCTIONS } from "./native-pack.generated.js";
+import { NATIVE_CORE, NATIVE_PACK } from "./native-pack.generated.js";
 import {
   serveAgentMcp,
   type AgentMcpClient,
@@ -561,7 +561,6 @@ const LEGACY_HANDLERS: Record<string, CommandHandler> = {
   wrap,
   run: wrap,
   status,
-  explore,
   verify: verifyFirstRequest,
   trial,
   usage,
@@ -1775,30 +1774,6 @@ function signalExitCode(signal: NodeJS.Signals | null): number {
   return 128 + (signals[signal] ?? 1);
 }
 
-function exploreUsage(): never {
-  console.error(`usage: ${invokedCommand("explore")} install [--agent claude] [--user] [--dir <path>]`);
-  console.error("  legacy alias for tools skills install caveman-explore");
-  console.error("  --agent claude   target Claude Code (default; codex is not wired yet)");
-  console.error("  --user           install in the Claude profile's skills directory for all repos");
-  console.error("  --dir <path>     write SKILL.md into <path>");
-  process.exit(2);
-}
-
-function guardExploreAgent(agent: string) {
-  if (agent === "claude") return;
-  console.error(`caveman explore: only --agent claude is wired today (codex needs verified transcript isolation first). got: ${agent}`);
-  process.exit(2);
-}
-
-// Unprinted compatibility alias. Canonical surface is:
-// caveman tools skills install caveman-explore.
-async function explore(rest: string[]) {
-  if (rest[0] !== "install") return exploreUsage();
-  const agent = flagFrom(rest, "--agent", "claude");
-  guardExploreAgent(agent);
-  return skills(["install", "caveman-explore", ...rest.slice(1), "--no-pixel"]);
-}
-
 const SKILLS: Record<string, string> = AGENT_SKILLS;
 const STUB_EST_TOKENS = 120;
 const PIXEL_MARKER_PREFIX = "<!-- caveman-pixel v1 sha256:";
@@ -2218,7 +2193,7 @@ function skillsUsage(): never {
   console.error(`       ${invokedCommand("skills")} install [name] [--suite <name>] [--agent claude|codex] [--user] [--dir <path>] [--density conservative|balanced|max] [--no-pixel]`);
 	console.error(`       ${invokedCommand("skills")} add <source> [npx-skills-add-options] [--density conservative|balanced|max] [--no-pixel]`);
 	console.error(`       ${invokedCommand("skills")} import <skill-dir|SKILL.md> [--out <dir>] [--dry-run] [--json]`);
-  console.error("  install a Caveman agent skill (default name: caveman-learn) or a named suite");
+  console.error("  install a Caveman agent skill (default name: caveman) or a named suite");
   console.error("  add <source>     install any Git/URL/local source through the official Skills CLI, then pixelize new Claude Code/Codex skills");
   console.error("                   accepts npx skills add flags such as --skill, --agent, --global, --list, --yes, and --all");
   console.error("  --agent claude   Claude Code (default) — writes .claude/skills/<name>/SKILL.md");
@@ -2412,7 +2387,7 @@ function skillInstallNames(rest: string[]): string[] {
   }
   const after = rest.slice(1);
   const optionsWithValues = new Set(["--agent", "--dir", "--density", "--suite"]);
-  return [positionalAfterOptions(after, optionsWithValues) ?? "caveman-learn"];
+  return [positionalAfterOptions(after, optionsWithValues) ?? "caveman"];
 }
 
 function skillDestination(name: string, rest: string[], multiple: boolean, agent: string): string {
@@ -2585,7 +2560,6 @@ async function skills(rest: string[]) {
       console.error(`caveman skills: unknown skill ${JSON.stringify(name)} (known: ${Object.keys(SKILLS).join(", ")})`);
       process.exit(2);
     }
-    if (name === "caveman-explore") guardExploreAgent(agent);
   }
   const installed: { name: string; dest: string; pixelResult: ConvertResult | null }[] = [];
   for (const name of names) {
@@ -16781,10 +16755,10 @@ async function shrinkHook() {
 }
 
 type NativePolicyMode = "record" | "safe" | "max";
-type NativeProfile = "record-only" | "core" | "core-lean-build" | "ledger" | "ccr-masking" | "cache-aware" | "full-safe" | "full-max";
+type NativeProfile = "record-only" | "core" | "ledger" | "ccr-masking" | "cache-aware" | "full-safe" | "full-max";
 
 const NATIVE_PROFILES = new Set<NativeProfile>([
-  "record-only", "core", "core-lean-build", "ledger", "ccr-masking", "cache-aware", "full-safe", "full-max",
+  "record-only", "core", "ledger", "ccr-masking", "cache-aware", "full-safe", "full-max",
 ]);
 
 function nativeProfile(): NativeProfile {
@@ -17475,7 +17449,7 @@ async function nativeHook(argv: string[]) {
   const runtimeContext = policyMode === "record" || !coreEnabled ? undefined : runtimeResponse?.context;
   const coreContext = policyMode === "record" || profile === "record-only" || !coreEnabled
     ? ""
-    : profile === "core-lean-build" ? `${NATIVE_CORE} ${NATIVE_SKILL_INSTRUCTIONS["lean-build"]}` : NATIVE_CORE;
+    : NATIVE_CORE;
   let marker: string | undefined;
   if (sessionId && runtimeResponse?.decision_id && (normalizedEvent === "SessionStart" || normalizedEvent === "PostCompact")) {
     const opts = defaultWrapOptions();
@@ -19094,7 +19068,7 @@ function commaCount(value: number): string {
 }
 
 const LEARN_DETAILED_NEXT =
-  "next:  caveman tools skills install caveman-learn   (review and apply fixes; asks first)  ·  preview one fix: caveman learn apply <id> --dry-run";
+  "next:  caveman learn implement   (review and apply fixes; asks first)  ·  preview one fix: caveman learn apply <id> --dry-run";
 const LEARN_ALL_FOOTER = [
   "advanced: caveman learn applied <id> [--fix-kind <kind>] [--note <text>]   record a fix you approved, so later runs can measure it",
   "simulate: caveman learn simulate <id...>   estimate what fixes would have saved over your past sessions",
@@ -19678,7 +19652,7 @@ function renderLearnApply(raw: Record<string, any>, dryRun: boolean): string {
   const candidate = (raw.candidate && typeof raw.candidate === "object" ? raw.candidate : {}) as Record<string, any>;
   const klass = String(raw.class ?? candidate.class ?? "");
   if (klass === "behavioral" || klass === "load_bearing") {
-    return "this is a habit or a needed part of your setup — there is no automatic fix; the caveman-learn skill can turn it into a reminder, with your yes\n";
+    return "this is a habit or a needed part of your setup — there is no automatic fix; `caveman learn implement` can turn it into a reminder, with your yes\n";
   }
   const lines = [
     String(candidate.title ?? raw.sink_id ?? "learn candidate"),
@@ -19693,7 +19667,7 @@ function renderLearnApply(raw: Record<string, any>, dryRun: boolean): string {
   if (dryRun) lines.push("nothing changed — this is a preview");
   else {
     lines.push(`prepared, not applied — ${String(raw.candidate_path ?? join(cavemanHome(), "candidates", `learn-${raw.sink_id}.json`))}`);
-    lines.push("to apply it, use the caveman-learn skill: caveman tools skills install caveman-learn");
+    lines.push("to apply it, run: caveman learn implement");
   }
   return `${lines.join("\n")}\n`;
 }
@@ -19708,7 +19682,7 @@ export function renderLearnSavings(raw: Record<string, any>): string {
   const out: string[] = [];
   if (rows.length === 0) {
     out.push("no fix recorded yet");
-    out.push("apply one with the caveman-learn skill and it shows up here, with how it was measured");
+    out.push("apply one with caveman learn implement and it shows up here, with how it was measured");
     for (const caveat of (raw.caveats ?? []) as string[]) out.push(dim(`· ${caveat}`));
     return `${out.join("\n")}\n`;
   }
@@ -19882,13 +19856,11 @@ function learnAutopilot(rest: string[]): void {
 function learnImplementUsage(): void {
   console.log(`${invokedAs()} learn implement [claude|codex] [--prompt "<focus>"]
   opens an interactive agent with the current local learn report
-  installs the caveman-learn safety guide when missing
   never edits findings marked needed; asks before every edit`);
 }
 
 function learnImplementPrompt(focus: string): string {
   const lines = [
-    "Use the caveman-learn skill.",
     "Run `caveman learn report --json`; if no current report exists, run `caveman learn --json` once and retry. Then present a short list of actionable findings.",
     "Work through selected fixes one at a time. Never edit load_bearing findings.",
     "Show the proposed diff and before → after token count, ask before every edit, apply only approved changes, then verify the reduction and any recall path.",
@@ -19896,29 +19868,6 @@ function learnImplementPrompt(focus: string): string {
   ];
   if (focus) lines.push(`User focus: ${focus}`);
   return lines.join(" ");
-}
-
-function ensureLearnAgentGuide(agent: AgentProfile): string {
-  const path = agent.id === "claude"
-    ? join(process.cwd(), ".claude", "skills", "caveman-learn", "SKILL.md")
-    : join(codexHomeDir(), "skills", "caveman-learn", "SKILL.md");
-  try {
-    readFileSync(path);
-    return "";
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-      console.error(`caveman learn implement: cannot read ${path}: ${(error as Error).message}`);
-      process.exit(1);
-    }
-  }
-  try {
-    mkdirSync(dirname(path), { recursive: true });
-    writeFileSync(path, SKILLS["caveman-learn"]!);
-  } catch (error) {
-    console.error(`caveman learn implement: cannot install guide at ${path}: ${(error as Error).message}`);
-    process.exit(1);
-  }
-  return path;
 }
 
 async function chooseLearnAgent(requested: string): Promise<AgentProfile> {
@@ -19966,8 +19915,6 @@ async function learnImplement(rest: string[]): Promise<void> {
   const focus = flagFrom(beforeSeparator, "--prompt", "")
     || (separator >= 0 ? rest.slice(separator + 1).join(" ") : "");
   const agent = await chooseLearnAgent(requested);
-  const installed = ensureLearnAgentGuide(agent);
-  if (installed) process.stderr.write(`${mark("ok")} caveman-learn guide installed: ${cyan(installed)}\n`);
   await wrap([agent.id, learnImplementPrompt(focus.trim())]);
 }
 

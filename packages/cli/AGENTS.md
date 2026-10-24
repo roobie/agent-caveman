@@ -50,9 +50,9 @@ First-run retro scan persists only closed `caveman.local_scan.v1` aggregate. Log
 and move cards, then one keyboard action menu. `--plain` restores compact text,
 `--all` restores every sink id/class/practice/suggestion, while `--json` and
 `--md` stay complete. `learn implement [claude|codex]
-[--prompt <focus>]` installs the existing `caveman-learn` safety guide when
-missing and launches the chosen interactive agent. The guide's per-edit consent,
-load-bearing protection, re-measurement, and inferred-only rules remain binding.
+[--prompt <focus>]` launches the chosen interactive agent with a prompt that
+carries the per-edit consent, load-bearing protection, re-measurement, and
+inferred-only rules, which remain binding.
 Presentation contract: [`TERMINAL_UX.md`](TERMINAL_UX.md).
 
 ## Conventions
