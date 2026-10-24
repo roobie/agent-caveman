@@ -37,7 +37,7 @@ If you want to install for one agent (or want to know exactly what command runs 
 
 | Agent | Install command | Auto-activates? |
 |---|---|:-:|
-| **Claude Code** | `claude plugin marketplace add roobie/agent-caveman && claude plugin install caveman@caveman` | Yes |
+| **Claude Code** | `claude plugin marketplace add https://github.com/roobie/agent-caveman.git && claude plugin install caveman@caveman` | Yes |
 | **Gemini CLI** | `gemini extensions install https://github.com/roobie/agent-caveman` | Yes |
 | **opencode** | `node installer/install.js --only opencode` *(or `npx -y github:roobie/agent-caveman -- --only opencode`)* | Yes (plugin + AGENTS.md) |
 | **Oh My Pi (OMP)** | `npx -y github:roobie/agent-caveman -- --only omp` *(or `node installer/install.js --only omp` from a clone)* | Yes (native OMP plugin) |
@@ -83,7 +83,7 @@ Not in the table, with their own steps below: [Claude apps (claude.ai, desktop, 
 Already inside a Claude Code session? The same Claude Code install as slash commands:
 
 ```text
-/plugin marketplace add roobie/agent-caveman
+/plugin marketplace add https://github.com/roobie/agent-caveman.git
 /plugin install caveman@caveman
 ```
 

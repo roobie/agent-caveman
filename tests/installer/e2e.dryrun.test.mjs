@@ -33,7 +33,7 @@ test('dry-run --only claude prints plan and writes nothing', () => {
   ], { encoding: 'utf8', env: dryRunEnv(cfg) });
   assert.equal(r.status, 0);
   assert.match(r.stdout, /Claude Code detected/);
-  assert.match(r.stdout, /would run: claude plugin marketplace add/);
+  assert.match(r.stdout, /would run: claude plugin marketplace add https:\/\/github\.com\/roobie\/agent-caveman\.git/);
   assert.match(r.stdout, /would run: claude plugin install caveman@caveman/);
   assert.match(r.stdout, /would mkdir -p .*[\\\/]hooks/);
   assert.match(r.stdout, /would install .*caveman-activate\.js/);

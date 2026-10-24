@@ -53,7 +53,7 @@ Skills alone fade: the agent slips back to normal prose as the chat grows. Hooks
 | Agent | Command |
 |---|---|
 | Any agent, skills only | `npx skills add roobie/agent-caveman -g` |
-| Claude Code plugin (auto-starts every session) | `claude plugin marketplace add roobie/agent-caveman && claude plugin install caveman@caveman` |
+| Claude Code plugin (auto-starts every session) | `claude plugin marketplace add https://github.com/roobie/agent-caveman.git && claude plugin install caveman@caveman` |
 | Gemini CLI | `gemini extensions install https://github.com/roobie/agent-caveman` |
 | Remove skills | `npx skills remove roobie/agent-caveman -g` |
 

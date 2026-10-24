@@ -546,7 +546,9 @@ async function installClaude(ctx) {
     // A dry run makes none; a dir this run made goes again once it is empty.
     const tmpExisted = fs.existsSync(path.join(configDir, 'tmp'));
     const pluginEnv = opts.dryRun ? null : sameFilesystemTmpEnv(configDir);
-    const r1 = runSpawn('claude', ['plugin', 'marketplace', 'add', REPO], { env: pluginEnv }, opts.dryRun);
+    // Full HTTPS URL: the owner/repo shorthand makes Claude Code clone over SSH,
+    // which fails on hosts without a GitHub key.
+    const r1 = runSpawn('claude', ['plugin', 'marketplace', 'add', `https://github.com/${REPO}.git`], { env: pluginEnv }, opts.dryRun);
     const r2 = runSpawn('claude', ['plugin', 'install', 'caveman@caveman'], { env: pluginEnv }, opts.dryRun);
     if (pluginEnv && !tmpExisted) { try { fs.rmdirSync(pluginEnv.TMPDIR); } catch (_) {} }
     if (spawnOk(r1) && spawnOk(r2)) {
