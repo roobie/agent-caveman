@@ -27,7 +27,6 @@ const { writeSessionMode, loadRuleset, thesisLine } = require(path.join(REPO_ROO
 // a paraphrase of it.
 const ULTRA_ROW = 'Ultracave is caveman with the grammar stripped.';
 const FULL_ROW = 'Caveman is a voice, not broken grammar.';
-const MEGA_ROW = 'Megacave is caveman in Classical Chinese.';
 
 let passed = 0;
 let failed = 0;
@@ -84,9 +83,9 @@ test('switch banner names the new mode', () => {
   assert.ok(/CAVEMAN MODE ACTIVE — mode: ultracave/.test(ctx), `no mode banner:\n${ctx}`);
 });
 
-test('/megacave (namespaced) injects the megacave skill body', () => {
+test('/megacave is retired: switching injects nothing and leaves the mode alone', () => {
   const ctx = runTracker(slash('caveman:megacave', ''), 'caveman');
-  assert.ok(ctx.includes(MEGA_ROW), `megacave rules missing:\n${ctx}`);
+  assert.ok(!/CAVEMAN MODE ACTIVE — mode:/.test(ctx), `retired command switched mode:\n${ctx}`);
 });
 
 test('the switch injects the WHOLE skill body, unfiltered', () => {
@@ -110,11 +109,11 @@ test('re-issuing the SAME mode does not re-inject the ruleset', () => {
 });
 
 test('a legacy alias of the stored mode is not a switch', () => {
-  // A pre-three-skill session file holding `wenyan` reads back as megacave,
-  // and `/caveman wenyan-full` parses to megacave: same mode, no re-injection.
+  // A legacy session file holding `wenyan` reads back as caveman,
+  // and `/caveman wenyan-full` parses to caveman: same mode, no re-injection.
   const ctx = runTracker(slash('caveman', 'wenyan-full'), 'wenyan');
   assert.ok(!/CAVEMAN MODE ACTIVE — mode:/.test(ctx), `alias no-op re-injected:\n${ctx}`);
-  assert.ok(/CAVEMAN MODE ACTIVE \(megacave\)/.test(ctx), `lost the per-turn reinforcement:\n${ctx}`);
+  assert.ok(/CAVEMAN MODE ACTIVE \(caveman\)/.test(ctx), `lost the per-turn reinforcement:\n${ctx}`);
 });
 
 test('an ordinary prompt still costs one reinforcement line', () => {
@@ -124,7 +123,7 @@ test('an ordinary prompt still costs one reinforcement line', () => {
 });
 
 test('reinforcement carries the thesis line read from the mode\'s SKILL.md', () => {
-  for (const mode of ['caveman', 'ultracave', 'megacave']) {
+  for (const mode of ['caveman', 'ultracave']) {
     const file = fs.readFileSync(path.join(REPO_ROOT, 'skills', mode, 'SKILL.md'), 'utf8');
     const lines = file.split('\n');
     const thesis = lines.slice(lines.indexOf('# ' + mode) + 1).find((l) => l.trim()).trim();

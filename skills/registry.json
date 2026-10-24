@@ -250,16 +250,6 @@
       "suites": [
         "output"
       ]
-    },
-    {
-      "id": "megacave",
-      "summary": "Caveman in Classical Chinese: wenyan register, technical terms verbatim.",
-      "delivery": [
-        "cli"
-      ],
-      "suites": [
-        "output"
-      ]
     }
   ],
   "suites": {
@@ -276,8 +266,7 @@
     ],
     "output": [
       "caveman",
-      "ultracave",
-      "megacave"
+      "ultracave"
     ]
   }
 }

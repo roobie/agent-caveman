@@ -33,7 +33,7 @@ literal `off` in a session file (the new, durable one).
 
 - Runs on every SessionStart — `source` is `startup`, `resume`, `clear`, `compact` or `fork`
 - Resolves this session's mode and persists it via the symlink-safe `safeWriteFlag` helper
-- Emits the active mode's skill (`skills/caveman`, `skills/ultracave` or `skills/megacave`) as hidden SessionStart context
+- Emits the active mode's skill (`skills/caveman` or `skills/ultracave`) as hidden SessionStart context
 - Sweeps session files older than 14 days (`CAVEMAN_SESSION_TTL_MS` overrides), on new sessions only
 - Detects missing statusline config and emits setup nudge (Claude will offer to help)
 
@@ -63,11 +63,11 @@ environment to opt a headless run back in.
 
 ### `caveman-mode-tracker.js` — UserPromptSubmit hook
 
-- Fires on every user prompt, checks for `/caveman`, `/ultracave`, `/megacave` commands and natural-language activation/deactivation phrases ("talk like caveman", "stop caveman", "normal mode")
+- Fires on every user prompt, checks for `/caveman`, `/ultracave` commands and natural-language activation/deactivation phrases ("talk like caveman", "stop caveman", "normal mode")
 - Writes the active mode for **this session** when a caveman command is detected; on deactivation it stores a durable `off` and clears the legacy mirror
-- Emits a small per-turn reinforcement reminder when the session's mode is a prose one (`caveman`/`ultracave`/`megacave`), built from that skill's first line
+- Emits a small per-turn reinforcement reminder when the session's mode is a prose one (`caveman`/`ultracave`), built from that skill's first line
 - Remembers the displaced prose mode per session, so two windows each running `/caveman-commit` return to their own mode
-- Stores: `caveman`, `ultracave`, `megacave`, `commit`, `review`, `compress`, `off`. Older level names still read correctly: `lite`/`full` → `caveman`, `ultra` → `ultracave`, `wenyan*` → `megacave`
+- Stores: `caveman`, `ultracave`, `commit`, `review`, `compress`, `off`. Older level names still read correctly: `lite`/`full` → `caveman`, `ultra` → `ultracave`; the removed `megacave`/`wenyan*` → `caveman`
 
 ### `caveman-statusline.sh` / `caveman-statusline.ps1` — Statusline badge script
 
@@ -141,9 +141,8 @@ caveman_text=""
 if [ -f "$caveman_flag" ]; then
   caveman_mode=$(cat "$caveman_flag" 2>/dev/null)
   case "$caveman_mode" in
-    caveman|lite|full) caveman_badge="CAVEMAN" ;;
+    caveman|lite|full|megacave|wenyan*) caveman_badge="CAVEMAN" ;;
     ultracave|ultra) caveman_badge="ULTRACAVE" ;;
-    megacave|wenyan*) caveman_badge="MEGACAVE" ;;
     commit|review|compress) caveman_badge="CAVEMAN:$(echo "$caveman_mode" | tr '[:lower:]' '[:upper:]')" ;;
     *) caveman_badge="" ;;                # off or unknown — render nothing
   esac
@@ -159,7 +158,6 @@ never sees a literal `off` because the legacy mirror is deleted on deactivation.
 Badge examples:
 - `/caveman` → `[CAVEMAN]`
 - `/ultracave` → `[ULTRACAVE]`
-- `/megacave` → `[MEGACAVE]`
 - `/caveman-commit` → `[CAVEMAN:COMMIT]`
 - `/caveman-review` → `[CAVEMAN:REVIEW]`
 

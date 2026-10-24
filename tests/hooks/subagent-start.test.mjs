@@ -46,7 +46,7 @@ function contextOf(stdout) {
   return out.hookSpecificOutput.additionalContext;
 }
 
-for (const mode of ['caveman', 'ultracave', 'megacave']) {
+for (const mode of ['caveman', 'ultracave']) {
   test(`subagent inherits this session's ${mode} skill`, t => {
     const { prompt, subagent } = fixture(t);
     prompt('/' + mode);

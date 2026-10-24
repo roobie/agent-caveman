@@ -22,11 +22,11 @@ test("openclaw embedded bootstrap fallback equals src/rules/caveman-openclaw-boo
   assert.equal(loadBootstrapSnippet(null), read("src/rules/caveman-openclaw-bootstrap.md"));
 });
 
-test("always-on copies name the three skills and no retired level list", () => {
+test("always-on copies name the two skills and no retired level list", () => {
   for (const file of ["src/rules/caveman-activate.md", "src/rules/caveman-openclaw-bootstrap.md"]) {
     const body = read(file);
     assert.match(body, /Respond terse like smart caveman/, `${file}: sentinel`);
-    for (const command of ["/caveman", "/ultracave", "/megacave"]) assert.ok(body.includes(command), `${file}: ${command}`);
-    assert.doesNotMatch(body, /wenyan|lite\|full/, `${file}: retired level names`);
+    for (const command of ["/caveman", "/ultracave"]) assert.ok(body.includes(command), `${file}: ${command}`);
+    assert.doesNotMatch(body, /wenyan|megacave|lite\|full/, `${file}: retired level names`);
   }
 });

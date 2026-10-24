@@ -115,7 +115,7 @@ checksum manifest plus every SHA-256, installs atomically into
 
 On Claude Code and Codex, the first `caveman <agent>` run (or
 `caveman enable <agent>` on an existing install) also writes the voice skills
-(`caveman`, `ultracave`, `megacave`) into the agent's user skills directory, so
+(`caveman`, `ultracave`) into the agent's user skills directory, so
 `/caveman` is available. An existing `SKILL.md` is never overwritten, and
 `caveman disable <agent>` leaves the skills in place.
 

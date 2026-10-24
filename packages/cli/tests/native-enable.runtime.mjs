@@ -2333,7 +2333,7 @@ test("enable claude installs the voice skills and discloses the write", async ()
   const fx = voiceFixture();
   const enabled = await run(["enable", "claude"], fx.env);
   assert.equal(enabled.code, 0, enabled.stderr);
-  for (const name of ["caveman", "ultracave", "megacave"]) {
+  for (const name of ["caveman", "ultracave"]) {
     assert.match(readFileSync(fx.skill(name), "utf8"), new RegExp(`^---\\nname: ${name}\\n`));
     assert.ok(enabled.stderr.includes(fx.skill(name)), enabled.stderr);
   }
@@ -2342,7 +2342,7 @@ test("enable claude installs the voice skills and discloses the write", async ()
   const disabled = await run(["disable", "claude"], fx.env);
   assert.equal(disabled.code, 0, disabled.stderr);
   // disable turns off routing and hooks; the skills are the user's and stay.
-  for (const name of ["caveman", "ultracave", "megacave"]) {
+  for (const name of ["caveman", "ultracave"]) {
     assert.match(readFileSync(fx.skill(name), "utf8"), new RegExp(`^---\\nname: ${name}\\n`));
   }
 });
@@ -2378,7 +2378,7 @@ test("editing or deleting a voice skill never degrades the integration or blocks
   const fx = voiceFixture();
   assert.equal((await run(["enable", "claude"], fx.env)).code, 0);
   writeFileSync(fx.skill("caveman"), "pixelized\n");
-  rmSync(dirname(fx.skill("megacave")), { recursive: true });
+  rmSync(dirname(fx.skill("ultracave")), { recursive: true });
   const doctor = await run(["doctor", "claude"], fx.env);
   assert.equal(doctor.code, 0, doctor.stderr);
   assert.equal(JSON.parse(doctor.stdout).state, "installed");
@@ -2386,7 +2386,7 @@ test("editing or deleting a voice skill never degrades the integration or blocks
   assert.equal(again.code, 0, again.stderr);
   assert.match(again.stderr, /already enabled/);
   assert.equal(readFileSync(fx.skill("caveman"), "utf8"), "pixelized\n");
-  assert.equal(existsSync(fx.skill("megacave")), false, "a deleted skill is not written back");
+  assert.equal(existsSync(fx.skill("ultracave")), false, "a deleted skill is not written back");
 });
 
 test("enable on an install that predates voice skills picks them up once", async () => {

@@ -38,7 +38,6 @@ const defaultCaveman = { getDefaultMode: () => 'caveman' };
 const defaultOff = { getDefaultMode: () => 'off' };
 const MODE_OF = {
   '/ultracave': 'ultracave', '/caveman:ultracave': 'ultracave',
-  '/megacave': 'megacave', '/caveman:megacave': 'megacave',
 };
 
 test('status uses one read-only verdict for literal and expanded commands', () => {
@@ -68,10 +67,9 @@ test('empty/whitespace prompt is a no-op', () => {
   assert.strictEqual(parseModeChange('   ', defaultCaveman), null);
 });
 
-test('/ultracave and /megacave set their own mode, bare or namespaced', () => {
+test('/ultracave sets its own mode, bare or namespaced', () => {
   for (const [prompt, mode] of [
     ['/ultracave', 'ultracave'], ['/caveman:ultracave', 'ultracave'],
-    ['/megacave', 'megacave'], ['/caveman:megacave', 'megacave'],
   ]) {
     assert.deepStrictEqual(parseModeChange(prompt, defaultCaveman), { action: 'set', mode }, prompt);
     // A configured default never overrides the command's own mode.
@@ -79,24 +77,24 @@ test('/ultracave and /megacave set their own mode, bare or namespaced', () => {
   }
 });
 
-test('/caveman <arg> accepts the three mode names', () => {
-  for (const mode of ['caveman', 'ultracave', 'megacave']) {
+test('/caveman <arg> accepts the two skill mode names', () => {
+  for (const mode of ['caveman', 'ultracave']) {
     assert.deepStrictEqual(parseModeChange('/caveman ' + mode, defaultCaveman), { action: 'set', mode });
   }
 });
 
-test('legacy level names still parse as aliases of the three modes', () => {
+test('legacy level names still parse as aliases of the two modes', () => {
   for (const [arg, mode] of [
     ['lite', 'caveman'], ['full', 'caveman'], ['ultra', 'ultracave'],
-    ['wenyan', 'megacave'], ['wenyan-lite', 'megacave'],
-    ['wenyan-full', 'megacave'], ['wenyan-ultra', 'megacave'],
+    ['wenyan', 'caveman'], ['wenyan-lite', 'caveman'],
+    ['wenyan-full', 'caveman'], ['wenyan-ultra', 'caveman'],
   ]) {
     assert.deepStrictEqual(parseModeChange('/caveman ' + arg, defaultCaveman), { action: 'set', mode }, arg);
   }
 });
 
-test('/ultracave and /megacave take the same off/status words as /caveman', () => {
-  for (const cmd of ['/ultracave', '/caveman:ultracave', '/megacave', '/caveman:megacave']) {
+test('/ultracave takes the same off/status words as /caveman', () => {
+  for (const cmd of ['/ultracave', '/caveman:ultracave']) {
     for (const word of ['off', 'stop', 'disable', 'off.']) {
       assert.deepStrictEqual(parseModeChange(`${cmd} ${word}`, defaultCaveman), { action: 'clear' }, `${cmd} ${word}`);
     }
@@ -111,7 +109,12 @@ test('/ultracave and /megacave take the same off/status words as /caveman', () =
 
 test('/ultracave-like prefixes are not the command', () => {
   assert.strictEqual(parseModeChange('/ultracaveman', defaultCaveman), null);
-  assert.strictEqual(parseModeChange('/megacave-stats', defaultCaveman), null);
+  assert.strictEqual(parseModeChange('/ultracave-stats', defaultCaveman), null);
+});
+
+test('/megacave is retired: no longer a command', () => {
+  assert.strictEqual(parseModeChange('/megacave', defaultCaveman), null);
+  assert.strictEqual(parseModeChange('/caveman:megacave', defaultCaveman), null);
 });
 
 test('bare /caveman activates at the configured default', () => {
@@ -156,11 +159,11 @@ test('punctuation glued to the level still resolves (#838)', () => {
 test('punctuation glued to a hyphenated level still resolves (#838)', () => {
   assert.deepStrictEqual(
     parseModeChange('/caveman wenyan-ultra.', defaultCaveman),
-    { action: 'set', mode: 'megacave' }
+    { action: 'set', mode: 'caveman' }
   );
   assert.deepStrictEqual(
     parseModeChange('/caveman wenyan-full,', defaultCaveman),
-    { action: 'set', mode: 'megacave' }
+    { action: 'set', mode: 'caveman' }
   );
 });
 
@@ -354,17 +357,13 @@ test('without unwrapQuotes, a quoted command does not match', () => {
 
 // ---------- expandedTpl (opencode's expanded command-template bodies) ----------
 
-test('expandedTpl recognizes the ultracave and megacave templates', () => {
+test('expandedTpl recognizes the ultracave and caveman templates', () => {
   const read = (name) => fs.readFileSync(
     path.join(__dirname, '..', 'src', 'plugins', 'opencode', 'commands', name), 'utf8',
   ).replace(/^---[\s\S]*?---\s*/, '');
   assert.deepStrictEqual(
     parseModeChange(read('ultracave.md'), { ...defaultCaveman, expandedTpl: true }),
     { action: 'set', mode: 'ultracave' }
-  );
-  assert.deepStrictEqual(
-    parseModeChange(read('megacave.md'), { ...defaultCaveman, expandedTpl: true }),
-    { action: 'set', mode: 'megacave' }
   );
   assert.deepStrictEqual(
     parseModeChange(read('caveman.md').replace('$ARGUMENTS', ''), { ...defaultCaveman, expandedTpl: true }),
@@ -425,7 +424,7 @@ test('expandedTpl: no non-activation opencode template switches a prose mode', (
   // matter stripped, $ARGUMENTS empty. /caveman-help listed "Activate caveman"
   // in its table, which flipped ultracave back to caveman (or turned it on).
   const dir = path.join(__dirname, '..', 'src', 'plugins', 'opencode', 'commands');
-  const PROSE = new Set(['caveman', 'ultracave', 'megacave']);
+  const PROSE = new Set(['caveman', 'ultracave']);
   const checked = [];
   for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.md'))) {
     if (PROSE.has(file.replace(/\.md$/, ''))) continue; // activation templates by design

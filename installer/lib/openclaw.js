@@ -230,7 +230,7 @@ function loadBootstrapSnippet(repoRoot) {
     '  skills/caveman/SKILL.md',
     '',
     'Commands: `/caveman` (default voice), `/ultracave` (grammar stripped: fragments,',
-    'each fact once), `/megacave` (Classical Chinese, 文言文).',
+    'each fact once).',
     'Stop with: "stop caveman" / "normal mode" / "deactivate caveman".',
     '',
     'Auto-Clarity: plain prose for security warnings, irreversible action',

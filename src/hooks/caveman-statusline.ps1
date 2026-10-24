@@ -72,8 +72,8 @@ if ($Mode -eq "off") { exit 0 }
 $Badges = @{
     'caveman' = 'CAVEMAN'; 'lite' = 'CAVEMAN'; 'full' = 'CAVEMAN'
     'ultracave' = 'ULTRACAVE'; 'ultra' = 'ULTRACAVE'
-    'megacave' = 'MEGACAVE'; 'wenyan' = 'MEGACAVE'; 'wenyan-lite' = 'MEGACAVE'
-    'wenyan-full' = 'MEGACAVE'; 'wenyan-ultra' = 'MEGACAVE'
+    'megacave' = 'CAVEMAN'; 'wenyan' = 'CAVEMAN'; 'wenyan-lite' = 'CAVEMAN'
+    'wenyan-full' = 'CAVEMAN'; 'wenyan-ultra' = 'CAVEMAN'
     'commit' = 'CAVEMAN:COMMIT'; 'review' = 'CAVEMAN:REVIEW'; 'compress' = 'CAVEMAN:COMPRESS'
 }
 if (-not $Badges.ContainsKey($Mode)) { exit 0 }

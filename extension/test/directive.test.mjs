@@ -25,7 +25,8 @@ test("buildPrimer carries the activation + the selected mode clause", () => {
     assert.ok(primer.trimEnd().endsWith("]"), "primer is a single closed bracket directive");
     assert.equal(primer.indexOf("]"), primer.length - 1, "no early bracket close");
   }
-  assert.match(D.buildPrimer("megacave"), /文言文/);
+  assert.doesNotMatch(D.buildPrimer("megacave"), /文言文/);
+  assert.ok(D.buildPrimer("megacave").includes("Mode CAVEMAN"), "retired megacave falls back to caveman");
 });
 
 test("each mode clause opens with its skill's thesis line", () => {
@@ -45,7 +46,7 @@ test("buildPrimer fails safe to CAVEMAN on an unknown mode", () => {
 test("buildReminder is a short stay-in-mode nudge naming the mode", () => {
   assert.equal(D.buildReminder("caveman"), "[stay in caveman mode — CAVEMAN]");
   assert.equal(D.buildReminder("ultracave"), "[stay in caveman mode — ULTRACAVE]");
-  assert.equal(D.buildReminder("megacave"), "[stay in caveman mode — MEGACAVE]");
+  assert.equal(D.buildReminder("megacave"), "[stay in caveman mode — CAVEMAN]");
   assert.equal(D.buildReminder("nonsense"), "[stay in caveman mode — CAVEMAN]");
 });
 
@@ -55,16 +56,17 @@ test("a reminder is much shorter than the primer (the smart-hybrid saving)", () 
 
 test("isPrefixed detects both primer and reminder, tolerating leading space/newlines", () => {
   assert.equal(D.isPrefixed(D.buildPrimer("caveman") + "\n\nhello"), true);
-  assert.equal(D.isPrefixed("\n  " + D.buildReminder("megacave") + "\n\nhi"), true);
+  assert.equal(D.isPrefixed("\n  " + D.buildReminder("ultracave") + "\n\nhi"), true);
   assert.equal(D.isPrefixed("just a normal prompt"), false);
   assert.equal(D.isPrefixed(""), false);
   assert.equal(D.isPrefixed(null), false);
   assert.equal(D.isPrefixed(undefined), false);
 });
 
-test("normMode clamps to the three modes and maps saved lite/full/ultra values", () => {
-  assert.deepEqual(D.MODES, ["caveman", "ultracave", "megacave"]);
+test("normMode clamps to the two modes and maps saved lite/full/ultra and retired megacave values", () => {
+  assert.deepEqual(D.MODES, ["caveman", "ultracave"]);
   for (const mode of D.MODES) assert.equal(D.normMode(mode), mode);
+  assert.equal(D.normMode("megacave"), "caveman");
   assert.equal(D.normMode("lite"), "caveman");
   assert.equal(D.normMode("full"), "caveman");
   assert.equal(D.normMode("ultra"), "ultracave");

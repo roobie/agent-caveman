@@ -173,14 +173,14 @@ function handle(raw) {
     // switch below matches against the literal command string, so this
     // envelope was a silent no-op for every slash command, including
     // '/caveman off'. Reconstruct '<name> <args>' for /caveman*, /ultracave
-    // and /megacave envelopes so the rest of this hook sees exactly what the
+    // envelopes so the rest of this hook sees exactly what the
     // user selected. A foreign command's envelope is left untouched, and
     // natural-language detection is skipped for it so another command's own
     // args can't misfire our activation/deactivation triggers.
     let skipNaturalLanguage = false;
     const envName = /<command-name>\s*([^<\s]+)\s*<\/command-name>/.exec(prompt);
     if (envName) {
-      if (/^\/(?:caveman|ultracave\b|megacave\b)/.test(envName[1])) {
+      if (/^\/(?:caveman|ultracave\b)/.test(envName[1])) {
         const envArgs = /<command-args>\s*([^<]*?)\s*<\/command-args>/.exec(prompt);
         const args = envArgs ? envArgs[1].trim() : '';
         prompt = args ? envName[1] + ' ' + args : envName[1];
@@ -276,7 +276,7 @@ function handle(raw) {
         // The rejected argument is never echoed: it is untrusted input headed
         // for model context.
         notice = 'Tell the user their /caveman argument was not recognized and the mode is '
-          + 'unchanged. Modes: /caveman, /ultracave, /megacave. Use /caveman off to deactivate.';
+          + 'unchanged. Modes: /caveman, /ultracave. Use /caveman off to deactivate.';
       }
     }
 

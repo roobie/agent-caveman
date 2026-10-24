@@ -73,7 +73,6 @@ test('hand-copied fallback whitelist stays equal to caveman-config VALID_MODES',
 // Distinctive lines from each skill body: proof the right SKILL.md travelled.
 const CAVEMAN_BODY = /Caveman is a voice, not broken grammar\./;
 const ULTRA_BODY = /Ultracave is caveman with the grammar stripped\./;
-const MEGA_BODY = /Megacave is caveman in Classical Chinese\./;
 
 test('default resolution with no config emits the caveman skill', (t) => {
   const item = fixture(t);
@@ -87,10 +86,10 @@ test('default resolution with no config emits the caveman skill', (t) => {
 test('CAVEMAN_DEFAULT_MODE wins over config files and selects its mode', (t) => {
   const item = fixture(t);
   writeFileSync(join(item.dir, '.caveman.json'), JSON.stringify({ defaultMode: 'ultracave' }));
-  const r = runHook(item, item.dir, { CAVEMAN_DEFAULT_MODE: 'megacave' });
+  const r = runHook(item, item.dir, { CAVEMAN_DEFAULT_MODE: 'caveman' });
   assert.equal(r.status, 0, r.stderr);
-  assert.match(r.stdout, /mode: megacave/);
-  assert.match(r.stdout, MEGA_BODY);
+  assert.match(r.stdout, /mode: caveman/);
+  assert.match(r.stdout, CAVEMAN_BODY);
   assert.doesNotMatch(r.stdout, ULTRA_BODY);
 });
 
@@ -183,13 +182,15 @@ test('CAVEMAN_DEFAULT_MODE with stray whitespace is rejected, not trimmed', (t) 
   assert.doesNotMatch(r.stdout, /mode: ultracave/);
 });
 
-test('legacy wenyan default resolves to the megacave skill', (t) => {
-  const item = fixture(t);
-  const r = runHook(item, item.dir, { CAVEMAN_DEFAULT_MODE: 'wenyan' });
-  assert.equal(r.status, 0, r.stderr);
-  assert.match(r.stdout, /mode: megacave/);
-  assert.match(r.stdout, MEGA_BODY);
-  assert.doesNotMatch(r.stdout, CAVEMAN_BODY);
+test('legacy wenyan and megacave defaults resolve to the caveman skill', (t) => {
+  for (const legacy of ['wenyan', 'megacave']) {
+    const item = fixture(t);
+    const r = runHook(item, item.dir, { CAVEMAN_DEFAULT_MODE: legacy });
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /mode: caveman/);
+    assert.match(r.stdout, CAVEMAN_BODY);
+    assert.doesNotMatch(r.stdout, /Classical Chinese/);
+  }
 });
 
 test('invalid JSON in the user config is skipped, not fatal', (t) => {

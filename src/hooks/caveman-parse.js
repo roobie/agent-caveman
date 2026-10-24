@@ -57,7 +57,6 @@ const canonicalMode = cavemanConfig.canonicalMode
 // Each prose mode has its own command, bare or plugin-namespaced.
 const MODE_COMMANDS = {
   '/ultracave': 'ultracave', '/caveman:ultracave': 'ultracave',
-  '/megacave': 'megacave', '/caveman:megacave': 'megacave',
 };
 
 // Modes handled by their own slash commands (/caveman-commit, etc.) — not
@@ -197,7 +196,7 @@ function resolveModeArg(rawArg, getDefaultMode) {
   // own command instead. Echoing `arg` here is safe precisely because it
   // matched this fixed whitelist — it is no longer free-form user text.
   if (INDEPENDENT_MODES.has(arg)) return { action: 'unresolved', independentMode: arg };
-  // caveman/ultracave/megacave, or a legacy level name mapped onto one.
+  // caveman/ultracave, or a legacy level name mapped onto one.
   const mode = canonicalMode(arg);
   if (mode && mode !== 'off') return { action: 'set', mode };
   // Bogus argument: never silently overwrite with the default (#602). The
@@ -257,7 +256,7 @@ function parseModeChange(promptRaw, options) {
   );
   if (wantsOff) return { action: 'clear' };
 
-  // opencode expands a typed "/caveman <arg>", "/ultracave", "/megacave" (and
+  // opencode expands a typed "/caveman <arg>", "/ultracave" (and
   // the independent-mode commands) into the command file's prose before
   // chat.message fires, so the literal slash-command branch below never sees
   // the original text. Recover the mode from each template's fixed prefix
@@ -276,7 +275,7 @@ function parseModeChange(promptRaw, options) {
     if (/^compress the file at:/.test(prompt)) {
       return { action: 'set', mode: 'compress' };
     }
-    const own = /^activate (ultracave|megacave) mode\b/.exec(prompt);
+    const own = /^activate (ultracave) mode\b/.exec(prompt);
     if (own) return { action: 'set', mode: own[1] };
     const tpl = /^activate caveman mode:[ \t]*(\S*)/.exec(firstLine);
     if (tpl) return resolveModeArg(tpl[1], getDefaultMode);

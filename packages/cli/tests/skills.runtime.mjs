@@ -155,7 +155,6 @@ test("skills list --json exposes closed metadata and deterministic suites", asyn
       "caveman-manage",
       "caveman-optimize",
       "caveman-setup",
-      "megacave",
       "ultracave",
     ],
   );

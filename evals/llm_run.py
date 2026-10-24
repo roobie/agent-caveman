@@ -42,7 +42,7 @@ Environment:
                        snapshots/fidelity.json for score_fidelity.py
                        (English control only)
   CAVEMAN_EVAL_SKILLS  optional comma-separated skill ids (e.g.
-                       caveman,ultracave,megacave) restricting the skill arms;
+                       caveman,ultracave) restricting the skill arms;
                        default runs every skills/*/SKILL.md. Unknown ids abort.
   CAVEMAN_EVAL_TIMEOUT seconds before one claude call is abandoned (default
                        300). A failed or timed-out call is retried twice

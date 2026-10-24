@@ -45,7 +45,6 @@ buildFlame(document.getElementById("flame"));
 const HINTS = {
   caveman: "Answer first, fluff gone, every technical fact kept.",
   ultracave: "Grammar stripped. Fragments, each fact once.",
-  megacave: "Classical Chinese (文言文). Code stays verbatim.",
 };
 
 function load() {

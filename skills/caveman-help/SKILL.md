@@ -1,7 +1,7 @@
 ---
 name: caveman-help
 description: >
-  Quick-reference card for the three caveman skills and their commands.
+  Quick-reference card for the caveman skills and their commands.
   Trigger: /caveman-help or "caveman help".
 ---
 
@@ -15,7 +15,6 @@ Display this reference card when invoked. One-shot — do NOT change mode, write
 |------|---------|-------------|
 | **caveman** | `/caveman` | The voice. Answer first, no fluff, every fact kept. Default. |
 | **ultracave** | `/ultracave` (alias `/caveman ultra`) | Grammar stripped. Fragments, one word when enough, each fact once. |
-| **megacave** | `/megacave` (alias `/caveman wenyan`) | Classical Chinese 文言文. Far fewer characters, technical terms verbatim. |
 
 Mode stick until changed or session end.
 `/caveman status` reports current mode without changing it. Claude Code and the standalone OpenCode plugin read stored state; other hosts answer from the conversation and mark it `(not tracked by this host)`.
@@ -55,7 +54,7 @@ For opt-in activation in Claude Code, set `defaultMode` to `manual`. Sessions st
 
 Set `"off"` to suppress automatic and bare-command activation. Use `"manual"` when bare `/caveman` should activate.
 
-Resolution: env var > repo config > user config > `caveman`. Legacy values `lite`, `full`, `ultra`, `wenyan*` still resolve.
+Resolution: env var > repo config > user config > `caveman`. Legacy values `lite`, `full`, `ultra` still resolve.
 
 ## More
 

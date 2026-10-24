@@ -59,13 +59,13 @@ for (const source of ['env', 'repo', 'user']) {
     assert.equal(mode(), 'off');
     run('caveman-mode-tracker.js', { prompt: 'talk like caveman' });
     assert.equal(mode(), 'caveman');
-    run('caveman-mode-tracker.js', { prompt: '/megacave' });
+    run('caveman-mode-tracker.js', { prompt: '/ultracave' });
     run('caveman-mode-tracker.js', { prompt: '/caveman-commit' });
     assert.equal(run('caveman-activate.js', { source: 'clear' }), 'OK');
     assert.equal(mode(), 'off');
     run('caveman-mode-tracker.js', { prompt: '/caveman-review' });
     run('caveman-mode-tracker.js', { prompt: 'continue after reset' });
-    assert.equal(mode(), 'off', 'one-shot after clear must not resurrect stale megacave');
+    assert.equal(mode(), 'off', 'one-shot after clear must not resurrect stale ultracave');
   });
 }
 

@@ -9,7 +9,7 @@
 
 const SENTINEL = "Respond terse like smart caveman";
 
-const TAIL = `Switch: /caveman (default), /ultracave (fragments, each fact once), /megacave (Classical Chinese 文言文)
+const TAIL = `Switch: /caveman (default), /ultracave (fragments, each fact once)
 Stop: "stop caveman" or "normal mode"
 
 Auto-Clarity: plain prose for security warnings, irreversible actions, step order a fragment could scramble, user confused, questions you ask the user. Resume after.

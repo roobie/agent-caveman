@@ -69,7 +69,7 @@ test('opencode fresh install drops plugin, commands, agents, skills, AGENTS.md, 
     assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'caveman', 'caveman-config.cjs')), 'caveman-config.cjs sibling missing');
     assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'caveman', 'caveman-parse.cjs')), 'caveman-parse.cjs sibling missing');
 
-    for (const f of ['caveman.md', 'ultracave.md', 'megacave.md', 'caveman-commit.md', 'caveman-review.md', 'caveman-compress.md', 'caveman-stats.md', 'caveman-help.md']) {
+    for (const f of ['caveman.md', 'ultracave.md','caveman-commit.md', 'caveman-review.md', 'caveman-compress.md', 'caveman-stats.md', 'caveman-help.md']) {
       assert.ok(fs.existsSync(path.join(ocDir, 'commands', f)), `command ${f} missing`);
     }
     for (const f of ['cavecrew-investigator.md', 'cavecrew-builder.md', 'cavecrew-reviewer.md']) {
@@ -77,7 +77,7 @@ test('opencode fresh install drops plugin, commands, agents, skills, AGENTS.md, 
       // Subagent-only: keeps cavecrew out of opencode's Tab cycle (#725).
       assert.match(fs.readFileSync(path.join(ocDir, 'agents', f), 'utf8'), /^mode: subagent$/m, `agent ${f} must be mode: subagent`);
     }
-    for (const name of ['caveman', 'ultracave', 'megacave', 'caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew']) {
+    for (const name of ['caveman', 'ultracave', 'caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew']) {
       assert.ok(fs.existsSync(path.join(ocDir, 'skills', name, 'SKILL.md')), `skill ${name}/SKILL.md missing`);
     }
     assert.ok(fs.existsSync(path.join(ocDir, 'AGENTS.md')), 'AGENTS.md missing');
@@ -373,7 +373,7 @@ test('opencode uninstall removes plugin dir, command/agent/skill files, prunes o
 // parsing, `experimental.chat.system.transform` for reinforcement, and the
 // `event` dispatcher (filtering event.type === 'session.created') for session
 // init. This test drives those real hooks.
-test('opencode plugin handles /caveman ultra, /megacave, stop caveman, and session init via real hooks', async () => {
+test('opencode plugin handles /caveman ultra, stop caveman, and session init via real hooks', async () => {
   const xdg = freshTmpDir();
   const shimDir = shimOpencode();
   const origDefault = process.env.CAVEMAN_DEFAULT_MODE;
@@ -428,15 +428,15 @@ test('opencode plugin handles /caveman ultra, /megacave, stop caveman, and sessi
     // chat.message fires — the argument must be recovered from the expanded text.
     await handlers['chat.message']({}, { parts: [{ type: 'text', text:
       'Activate caveman mode: wenyan-lite\n\nIf no argument given, use caveman. If "off", deactivate.' }] });
-    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'megacave');
+    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'caveman', 'legacy wenyan-lite argument migrates to caveman');
     await handlers['chat.message']({}, { parts: [{ type: 'text', text:
       'Activate caveman mode: off\n\nIf no argument given, use caveman. If "off", deactivate.' }] });
     assert.equal(fs.existsSync(flagPath), false, 'expanded template with off should delete the flag');
     await handlers['chat.message']({}, { parts: [{ type: 'text', text:
       'Activate caveman mode: \n\nIf no argument given, use caveman. If "off", deactivate.' }] });
     assert.equal(fs.readFileSync(flagPath, 'utf8'), 'caveman', 'expanded template without argument uses default');
-    // /ultracave and /megacave expand to their own command templates.
-    for (const [file, mode] of [['ultracave.md', 'ultracave'], ['megacave.md', 'megacave']]) {
+    // /ultracave expands to its own command template.
+    for (const [file, mode] of [['ultracave.md', 'ultracave']]) {
       const tpl = fs.readFileSync(path.join(REPO_ROOT, 'src', 'plugins', 'opencode', 'commands', file), 'utf8')
         .replace(/^---[\s\S]*?---\s*/, '');
       await handlers['chat.message']({}, { parts: [{ type: 'text', text: tpl }] });
@@ -763,12 +763,12 @@ test('opencode system.transform injects the active mode\'s SKILL.md body or thes
     assert.equal((sys.system[0].match(/CAVEMAN MODE ACTIVE/g) || []).length, 1,
       'banner must not duplicate across repeated transforms');
 
-    // The legacy wenyan argument lands on megacave.
+    // The legacy wenyan argument lands on caveman.
     await handlers['chat.message']({}, { parts: [{ type: 'text', text: '/caveman wenyan' }] });
-    const sysMega = { system: [] };
-    await handlers['experimental.chat.system.transform']({}, sysMega);
-    assert.match(sysMega.system[0], /CAVEMAN MODE ACTIVE \(megacave\)/);
-    assert.match(sysMega.system[0], /以文言答。技術之實皆存，唯贅言去之。/);
+    const sysLegacy = { system: [] };
+    await handlers['experimental.chat.system.transform']({}, sysLegacy);
+    assert.match(sysLegacy.system[0], /CAVEMAN MODE ACTIVE \(caveman\)/);
+    assert.doesNotMatch(sysLegacy.system[0], /以文言答/);
   } finally {
     if (origDefault === undefined) delete process.env.CAVEMAN_DEFAULT_MODE;
     else process.env.CAVEMAN_DEFAULT_MODE = origDefault;

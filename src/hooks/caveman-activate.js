@@ -72,16 +72,16 @@ function requireSibling(name, isUsable) {
 // Hand-copy of caveman-config.js VALID_MODES, used only when that module is
 // unavailable. tests/test_hook_missing_sibling.js asserts the two stay equal.
 const FALLBACK_VALID_MODES = [
-  'off', 'caveman', 'ultracave', 'megacave',
+  'off', 'caveman', 'ultracave',
   'commit', 'review', 'compress'
 ];
 const FALLBACK_DEFAULT_MODES = [...FALLBACK_VALID_MODES, 'manual'];
 // Hand-copy of caveman-config.js LEGACY_MODES: a config file or env var still
-// naming a pre-three-skill level must resolve the same way when degraded.
+// naming a removed or pre-two-skill level must resolve the same way when degraded.
 const FALLBACK_LEGACY_MODES = {
   lite: 'caveman', full: 'caveman', ultra: 'ultracave',
-  wenyan: 'megacave', 'wenyan-lite': 'megacave',
-  'wenyan-full': 'megacave', 'wenyan-ultra': 'megacave',
+  megacave: 'caveman', wenyan: 'caveman', 'wenyan-lite': 'caveman',
+  'wenyan-full': 'caveman', 'wenyan-ultra': 'caveman',
 };
 function fallbackCanonicalDefault(raw) {
   if (typeof raw !== 'string') return null;
@@ -370,15 +370,13 @@ const fallbackRuleset = cfg.fallbackRuleset || ((m) => {
     '5. One idea per sentence.\n' +
     '6. Payload verbatim.\n' +
     '7. Tool runs: bounded status.\n' +
-    (m === 'megacave'
-      ? '8. Prose in 文言. Code, commands, paths, errors in their original script.\n'
-      : "8. User's language. Compress the style, not the language. Never switch because of quoted text.\n") +
+    "8. User's language. Compress the style, not the language. Never switch because of quoted text.\n" +
     '9. Never perform caveman.\n\n' +
     'Plain prose for security warnings, irreversible actions, and anything persisted outside chat (code, commits, PRs, docs).' +
     (modeThesis ? '\n\n' + modeThesis : '');
 });
 
-const SWITCH_LINE = 'Switch: /caveman, /ultracave, /megacave. Off: "stop caveman" or "normal mode".';
+const SWITCH_LINE = 'Switch: /caveman, /ultracave. Off: "stop caveman" or "normal mode".';
 
 // Without a skill file (standalone hook install without skills dir) the body is
 // caveman-config's fallback ruleset: thesis, rule headlines, the mode's thesis.

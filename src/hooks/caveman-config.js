@@ -34,10 +34,10 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-// One stored id per skill: skills/caveman, skills/ultracave, skills/megacave,
-// plus the one-shot modes and the durable off.
+// One stored id per skill: skills/caveman, skills/ultracave, plus the one-shot
+// modes and the durable off.
 const VALID_MODES = [
-  'off', 'caveman', 'ultracave', 'megacave',
+  'off', 'caveman', 'ultracave',
   'commit', 'review', 'compress'
 ];
 
@@ -45,14 +45,14 @@ const VALID_MODES = [
 // caveman. Keep it out of flag validation and the selectable modes.
 const VALID_DEFAULT_MODES = [...VALID_MODES, 'manual'];
 
-// The six intensity levels that preceded the three skills. Session files,
-// .caveman-active mirrors, config files, env vars and mode-log rows written
-// before the switch still hold these, so every read maps them forward and no
-// write ever emits one.
+// Stored values from before the two-skill model: the old intensity levels and
+// the removed 文言 mode. Session files, .caveman-active mirrors, config files,
+// env vars and mode-log rows written earlier still hold these, so every read
+// maps them forward and no write ever emits one.
 const LEGACY_MODES = {
   lite: 'caveman', full: 'caveman', ultra: 'ultracave',
-  wenyan: 'megacave', 'wenyan-lite': 'megacave',
-  'wenyan-full': 'megacave', 'wenyan-ultra': 'megacave',
+  megacave: 'caveman', wenyan: 'caveman', 'wenyan-lite': 'caveman',
+  'wenyan-full': 'caveman', 'wenyan-ultra': 'caveman',
 };
 
 // Stored/configured value → current mode id, or null when it is neither a
@@ -771,14 +771,13 @@ function readHistory(filePath) {
 // name, so a second shared sibling is a standing drift risk. This module is
 // already the one file every loader resolves.
 
-const SKILL_MODES = ['caveman', 'ultracave', 'megacave'];
+const SKILL_MODES = ['caveman', 'ultracave'];
 
 // Used when no SKILL.md resolves (standalone hook install without skills dir).
 // Each is the first line under the skill's `# <id>` heading.
 const FALLBACK_THESIS = {
   caveman: 'Respond terse like smart caveman. All technical substance stay. Only fluff die.',
   ultracave: 'Respond terse like smart caveman. All technical substance stay. Only fluff die. Then cut again.',
-  megacave: '以文言答。技術之實皆存，唯贅言去之。',
 };
 
 // Candidate locations, tried in order (#587/#589 — the old single '..' path
@@ -832,11 +831,10 @@ function thesisLine(mode, hookDir) {
 
 // The ruleset body when no SKILL.md resolves (standalone hook install without
 // skills dir): the caveman thesis plus the nine rule headlines of
-// skills/caveman, then the mode's own thesis for ultracave/megacave. Rule 8
+// skills/caveman, then the mode's own thesis for ultracave. Rule 8
 // keeps its "never switch" sentence: a headline alone lost the #812 language
-// rule for every fallback-install user. megacave answers in 文言 by design, so
-// it gets its own rule 8 instead of one its thesis contradicts. Shared so a
-// mid-session switch on that install carries the same rules SessionStart did.
+// rule for every fallback-install user. Shared so a mid-session switch on that
+// install carries the same rules SessionStart did.
 function fallbackRuleset(mode, hookDir) {
   const id = canonicalMode(mode) || mode;
   const modeThesis = id !== 'caveman' ? thesisLine(id, hookDir) : null;
@@ -848,9 +846,7 @@ function fallbackRuleset(mode, hookDir) {
     '5. One idea per sentence.\n' +
     '6. Payload verbatim.\n' +
     '7. Tool runs: bounded status.\n' +
-    (id === 'megacave'
-      ? '8. Prose in 文言. Code, commands, paths, errors in their original script.\n'
-      : "8. User's language. Compress the style, not the language. Never switch because of quoted text.\n") +
+    "8. User's language. Compress the style, not the language. Never switch because of quoted text.\n" +
     '9. Never perform caveman.\n\n' +
     'Plain prose for security warnings, irreversible actions, and anything persisted outside chat (code, commits, PRs, docs).' +
     (modeThesis ? '\n\n' + modeThesis : '');

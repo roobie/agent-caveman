@@ -10,7 +10,6 @@ const read = (relative) => readFileSync(new URL(`../../${relative}`, import.meta
 for (const file of [
   "skills/caveman/SKILL.md",
   "skills/ultracave/SKILL.md",
-  "skills/megacave/SKILL.md",
   "skills/caveman-help/SKILL.md",
   // Ships inside dist/caveman.skill next to the SKILL.md.
   "skills/caveman/README.md",

@@ -496,7 +496,7 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("### 1. Answer first", result.stdout)
             self.assertIn(body, result.stdout)
             self.assertTrue(result.stdout.startswith("CAVEMAN MODE ACTIVE — mode: caveman\n\n# caveman\n"))
-            self.assertIn("Switch: /caveman, /ultracave, /megacave.", result.stdout)
+            self.assertIn("Switch: /caveman, /ultracave.", result.stdout)
 
     def test_activate_finds_skill_beside_config_dir_hooks(self):
         # Standalone layout: hooks at $CLAUDE_CONFIG_DIR/hooks/, skill installed
@@ -621,14 +621,14 @@ class SessionStartSourceTests(unittest.TestCase):
         self.assertIn("mode: caveman", r.stdout)
         self.assertNotIn("mode: ultracave", r.stdout)
 
-    def test_legacy_wenyan_session_file_resolves_to_megacave(self):
+    def test_legacy_wenyan_session_file_resolves_to_caveman(self):
         self.set_session_mode("sessA", "wenyan-lite")
         r = self.activate({"session_id": "sessA", "source": "compact"})
-        self.assertIn("CAVEMAN MODE ACTIVE — mode: megacave", r.stdout)
-        self.assertIn("Megacave is caveman in Classical Chinese.", r.stdout)
+        self.assertIn("CAVEMAN MODE ACTIVE — mode: caveman", r.stdout)
+        self.assertNotIn("Classical Chinese", r.stdout)
         # Re-persisted under the new id; the mirror follows.
-        self.assertEqual(self.session_mode("sessA"), "megacave")
-        self.assertEqual((self.claude_dir / ".caveman-active").read_text(encoding="utf-8"), "megacave")
+        self.assertEqual(self.session_mode("sessA"), "caveman")
+        self.assertEqual((self.claude_dir / ".caveman-active").read_text(encoding="utf-8"), "caveman")
 
     def test_legacy_env_default_resolves_to_its_skill(self):
         r = self.activate(
@@ -640,7 +640,7 @@ class SessionStartSourceTests(unittest.TestCase):
 
     def test_fallback_ruleset_without_any_skill_file(self):
         # Standalone hooks with no skills dir: thesis + rule headlines, plus the
-        # mode's own thesis for ultracave/megacave.
+        # mode's own thesis for ultracave.
         with tempfile.TemporaryDirectory(prefix="caveman-noskill-") as tmp:
             hooks = Path(tmp) / "hooks"
             hooks.mkdir()
@@ -648,11 +648,11 @@ class SessionStartSourceTests(unittest.TestCase):
                 shutil.copy(REPO_ROOT / "src" / "hooks" / name, hooks / name)
             self.ACTIVATE = str(hooks / "caveman-activate.js")
             r = self.activate({"session_id": "sessA", "source": "startup"},
-                              extra_env={"CAVEMAN_DEFAULT_MODE": "megacave"})
-        self.assertIn("CAVEMAN MODE ACTIVE — mode: megacave", r.stdout)
+                              extra_env={"CAVEMAN_DEFAULT_MODE": "ultracave"})
+        self.assertIn("CAVEMAN MODE ACTIVE — mode: ultracave", r.stdout)
         self.assertIn("Respond terse like smart caveman.", r.stdout)
         self.assertIn("9. Never perform caveman.", r.stdout)
-        self.assertIn("以文言答。技術之實皆存，唯贅言去之。", r.stdout)
+        self.assertIn("Only fluff die. Then cut again.", r.stdout)
         self.assertNotIn("### 1.", r.stdout)
 
     def test_resume_preserves_a_deactivated_session_too(self):

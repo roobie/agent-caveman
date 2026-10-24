@@ -63,7 +63,7 @@ test('install lands agents, hook payload and one sessionStart entry; rerun and u
     assert.doesNotMatch(fm, /^model:/m);
     assert.equal(/^readonly: true$/m.test(fm), name !== 'cavecrew-builder.md', name);
   }
-  for (const rel of ['hooks/caveman-config.js', 'hooks/package.json', 'skills/caveman/SKILL.md', 'skills/ultracave/SKILL.md', 'skills/megacave/SKILL.md']) {
+  for (const rel of ['hooks/caveman-config.js', 'hooks/package.json', 'skills/caveman/SKILL.md', 'skills/ultracave/SKILL.md']) {
     assert.ok(fs.existsSync(path.join(root, 'caveman', rel)), rel);
   }
   const entries = hooksJson().hooks.sessionStart;

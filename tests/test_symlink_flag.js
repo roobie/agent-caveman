@@ -104,7 +104,7 @@ test('safeWriteFlag then readFlag round-trip through symlink', (tmp) => {
 
   // Read back through the same symlink path
   const result = readFlag(flagPath);
-  assert.strictEqual(result, 'megacave');
+  assert.strictEqual(result, 'caveman');
 });
 
 test('refuses flag file that is itself a symlink (even through symlinked parent)', (tmp) => {
@@ -214,8 +214,8 @@ test('all valid modes round-trip through symlinked parent', (tmp) => {
 test('every legacy level name reads back as its skill mode', (tmp) => {
   const flagPath = path.join(tmp, '.caveman-active');
   const legacy = {
-    lite: 'caveman', full: 'caveman', ultra: 'ultracave', wenyan: 'megacave',
-    'wenyan-lite': 'megacave', 'wenyan-full': 'megacave', 'wenyan-ultra': 'megacave',
+    lite: 'caveman', full: 'caveman', ultra: 'ultracave', wenyan: 'caveman', megacave: 'caveman',
+    'wenyan-lite': 'caveman', 'wenyan-full': 'caveman', 'wenyan-ultra': 'caveman',
   };
   for (const [old, mode] of Object.entries(legacy)) {
     fs.writeFileSync(flagPath, old + '\n');

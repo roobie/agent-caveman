@@ -108,13 +108,13 @@ echo "10. Upgrade path: an old install has only the legacy flag, holding an old 
 export CLAUDE_CONFIG_DIR="$SANDBOX/old"
 mkdir -p "$CLAUDE_CONFIG_DIR"
 printf 'wenyan-lite' > "$CLAUDE_CONFIG_DIR/.caveman-active"
-check "badge maps legacy flag"    "[MEGACAVE]" "$(badge '{"session_id":"sess-X"}')"
+check "badge maps legacy flag"    "[CAVEMAN]" "$(badge '{"session_id":"sess-X"}')"
 case "$(prompt '{"session_id":"sess-X","prompt":"hi"}')" in
-  *'(megacave)'*) check "reinforcement maps legacy flag" "yes" "yes" ;;
+  *'(caveman)'*) check "reinforcement maps legacy flag" "yes" "yes" ;;
   *)              check "reinforcement maps legacy flag" "yes" "no"  ;;
 esac
 case "$(CAVEMAN_DEFAULT_MODE=ultra activate '{"session_id":"sess-X","source":"compact"}')" in
-  *'mode: megacave'*) check "compaction keeps the legacy mode" "yes" "yes" ;;
+  *'mode: caveman'*) check "compaction keeps the legacy mode" "yes" "yes" ;;
   *)                  check "compaction keeps the legacy mode" "yes" "no"  ;;
 esac
 

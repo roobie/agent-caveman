@@ -709,10 +709,10 @@ test('statusline.sh renders the session mode, not the shared flag', (tmp) => {
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
   fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
-  seedSessions(claudeDir, { sessA: 'ultracave', sessB: 'megacave' });
+  seedSessions(claudeDir, { sessA: 'ultracave', sessB: 'caveman' });
 
   assert.match(statusline(claudeDir, '{"session_id":"sessA"}'), /\[ULTRACAVE\]/);
-  assert.match(statusline(claudeDir, '{"session_id":"sessB"}'), /\[MEGACAVE\]/);
+  assert.match(statusline(claudeDir, '{"session_id":"sessB"}'), /\[CAVEMAN\]/);
 });
 
 test('statusline.sh badge for every mode id and every legacy level name', (tmp) => {
@@ -720,10 +720,10 @@ test('statusline.sh badge for every mode id and every legacy level name', (tmp) 
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
   const badges = {
-    caveman: '[CAVEMAN]', ultracave: '[ULTRACAVE]', megacave: '[MEGACAVE]',
+    caveman: '[CAVEMAN]', ultracave: '[ULTRACAVE]',
     commit: '[CAVEMAN:COMMIT]', review: '[CAVEMAN:REVIEW]', compress: '[CAVEMAN:COMPRESS]',
-    lite: '[CAVEMAN]', full: '[CAVEMAN]', ultra: '[ULTRACAVE]', wenyan: '[MEGACAVE]',
-    'wenyan-lite': '[MEGACAVE]', 'wenyan-full': '[MEGACAVE]', 'wenyan-ultra': '[MEGACAVE]',
+    lite: '[CAVEMAN]', full: '[CAVEMAN]', ultra: '[ULTRACAVE]', megacave: '[CAVEMAN]', wenyan: '[CAVEMAN]',
+    'wenyan-lite': '[CAVEMAN]', 'wenyan-full': '[CAVEMAN]', 'wenyan-ultra': '[CAVEMAN]',
   };
   for (const [mode, badge] of Object.entries(badges)) {
     seedSessions(claudeDir, { s: mode });
@@ -762,7 +762,7 @@ test('statusline.sh falls back to the legacy flag without a usable session id', 
     'not json at all',
     '',                                   // no payload
   ]) {
-    assert.match(statusline(claudeDir, stdin), /\[MEGACAVE\]/, `stdin: ${stdin}`);
+    assert.match(statusline(claudeDir, stdin), /\[CAVEMAN\]/, `stdin: ${stdin}`);
   }
 });
 

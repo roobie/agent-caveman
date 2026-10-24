@@ -56,7 +56,6 @@ Pick your club:
 |---|---|---:|
 | `/caveman` | New object ref each render, so React re-renders. Wrap the prop in `useMemo`. | 20 |
 | `/ultracave` | Inline object prop, new ref, re-render. `useMemo`. | 14 |
-| `/megacave` | 新參照致重繪。`useMemo`。 | **13** |
 
 <sub>Token counts: tiktoken o200k.</sub>
 
@@ -272,7 +271,7 @@ In your agent:
 
 | Command | What it does |
 |---|---|
-| `/caveman` · `/ultracave` · `/megacave` | The voice, the grunt, the 文言文. `/caveman status` shows the mode, `/caveman off` stops it |
+| `/caveman` · `/ultracave` | The voice, the grunt. `/caveman status` shows the mode, `/caveman off` stops it |
 | `/caveman-commit` | One-line Conventional Commit |
 | `/caveman-review` | One finding per line: `L42: 🔴 null deref. Guard it.` |
 | `/caveman-compress <file>` | Shrinks memory files and backs up the original |

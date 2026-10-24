@@ -128,12 +128,11 @@ test('fallback still tells the model not to switch languages', () => {
   assert.match(out, /never switch/i, 'the fallback dropped the rule instead of the example');
 });
 
-test('megacave fallback does not pair "never switch language" with its 文言 thesis', () => {
+test('legacy megacave default resolves to the caveman fallback, with no 文言 thesis', () => {
   const out = activate({ withSkills: false, mode: 'megacave' });
-  assert.ok(out.includes('mode: megacave'), 'expected a megacave session');
-  assert.ok(out.includes('以文言答'), 'the 文言 thesis went missing');
-  assert.doesNotMatch(out, /never switch/i, 'megacave fallback contradicts its own thesis');
-  assert.doesNotMatch(out, /User's language/, 'megacave fallback contradicts its own thesis');
+  assert.ok(out.includes('mode: caveman'), 'expected a caveman session');
+  assert.ok(!out.includes('以文言答'), 'the 文言 thesis should be gone');
+  assert.match(out, /never switch/i);
 });
 
 test('ultracave fallback keeps the user-language rule (its skill floor keeps it too)', () => {
@@ -143,7 +142,7 @@ test('ultracave fallback keeps the user-language rule (its skill floor keeps it 
 });
 
 test('every fallback keeps the plain-prose exceptions', () => {
-  for (const mode of ['caveman', 'ultracave', 'megacave']) {
+  for (const mode of ['caveman', 'ultracave']) {
     const out = activate({ withSkills: false, mode });
     assert.ok(
       out.includes('Plain prose for security warnings, irreversible actions, and anything persisted outside chat (code, commits, PRs, docs).'),

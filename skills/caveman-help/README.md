@@ -20,7 +20,6 @@ Also triggers on "caveman help", "what caveman commands", "how do I use caveman"
 Modes:
   /caveman              the voice (default)
   /ultracave            grammar stripped
-  /megacave             classical Chinese
   /caveman status       report the mode, change nothing
 
 Skills:

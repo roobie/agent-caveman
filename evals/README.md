@@ -23,12 +23,14 @@ this harness did and is why its numbers were inflated.
 ## Current snapshot
 
 `snapshots/results.json` was generated on `claude-opus-5-5` with Claude
-Code 2.1.288 (2026-10-02), with the three response-style skills as the
-skill arms: `caveman`, `ultracave`, `megacave`. The other `skills/*`
-directories are workflow skills, not response styles, so they are left out.
+Code 2.1.288 (2026-10-02), with the response-style skills of that date as the
+skill arms: `caveman`, `ultracave`, `megacave`. `megacave` has since been
+removed; regenerating the snapshot yields only `caveman` and `ultracave`. The
+other `skills/*` directories are workflow skills, not response styles, so they
+are left out.
 
 ```bash
-CAVEMAN_EVAL_MODEL=claude-opus-5-5 CAVEMAN_EVAL_SKILLS=caveman,ultracave,megacave \
+CAVEMAN_EVAL_MODEL=claude-opus-5-5 CAVEMAN_EVAL_SKILLS=caveman,ultracave \
   python3 evals/llm_run.py
 ```
 
@@ -99,7 +101,7 @@ By default every `skills/*/SKILL.md` gets an arm. `CAVEMAN_EVAL_SKILLS`
 before any call:
 
 ```bash
-CAVEMAN_EVAL_SKILLS=caveman,ultracave,megacave uv run python evals/llm_run.py
+CAVEMAN_EVAL_SKILLS=caveman,ultracave uv run python evals/llm_run.py
 ```
 
 Each call times out after `CAVEMAN_EVAL_TIMEOUT` seconds (default 300). A
@@ -179,7 +181,7 @@ calls. The first six cases come from
 
 ```bash
 CAVEMAN_EVAL_SET=fidelity CAVEMAN_EVAL_MODEL=claude-opus-5-5 \
-  CAVEMAN_EVAL_SKILLS=caveman,ultracave,megacave python3 evals/llm_run.py
+  CAVEMAN_EVAL_SKILLS=caveman,ultracave python3 evals/llm_run.py
 python3 evals/score_fidelity.py
 ```
 

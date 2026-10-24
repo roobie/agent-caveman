@@ -84,7 +84,7 @@ test('walks up from nested cwd to find repo config', (tmp) => {
   const nested = path.join(tmp, 'a', 'b', 'c');
   fs.mkdirSync(nested, { recursive: true });
   process.chdir(nested);
-  assert.strictEqual(getDefaultMode(), 'megacave');
+  assert.strictEqual(getDefaultMode(), 'caveman');
 });
 
 test('env var beats repo-local config', (tmp) => {
@@ -182,9 +182,11 @@ test('getDefaultMode() with no args is unchanged (defaults to process.cwd())', (
 });
 
 test('new mode ids are accepted from every source', (tmp) => {
-  fs.writeFileSync(path.join(tmp, '.caveman.json'), JSON.stringify({ defaultMode: 'megacave' }));
+  fs.writeFileSync(path.join(tmp, '.caveman.json'), JSON.stringify({ defaultMode: 'ultracave' }));
   process.chdir(tmp);
-  assert.strictEqual(getDefaultMode(), 'megacave');
+  assert.strictEqual(getDefaultMode(), 'ultracave');
+  process.env.CAVEMAN_DEFAULT_MODE = 'megacave';
+  assert.strictEqual(getDefaultMode(), 'caveman', 'retired megacave migrates to caveman');
   process.env.CAVEMAN_DEFAULT_MODE = 'ultracave';
   assert.strictEqual(getDefaultMode(), 'ultracave');
   process.env.CAVEMAN_DEFAULT_MODE = 'manual';

@@ -2,6 +2,8 @@
 
 Status: implemented in 3.1.0 (2026-10-02). Kept as the design record for the three-skill mode model.
 
+Note: `megacave` (文言文) was later removed in this fork. Legacy `megacave` and `wenyan*` values now resolve to `caveman`; two skills remain. The plan below is historical.
+
 ## Goal
 
 Six intensity levels become three skills that map 1:1 to stored modes. No per-level filtering of SKILL.md. Every embedded rule copy derives from the skill files. Old stored values keep working.

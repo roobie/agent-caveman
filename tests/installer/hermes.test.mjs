@@ -23,7 +23,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(HERE, '..', '..');
 const INSTALLER = path.join(REPO_ROOT, 'installer', 'install.js');
 
-const SKILLS = ['caveman', 'ultracave', 'megacave', 'caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew'];
+const SKILLS = ['caveman', 'ultracave','caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew'];
 
 function freshHome() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'caveman-hermes-'));

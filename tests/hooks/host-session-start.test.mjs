@@ -66,7 +66,7 @@ test('a legacy configured level resolves to its v3 skill', (t) => {
   const { dir, env } = fixture(t);
   env.CAVEMAN_DEFAULT_MODE = 'wenyan-lite';
   const out = run('cursor', { env, cwd: dir });
-  assert.ok(out.additional_context.includes(skillBody('megacave')));
+  assert.ok(out.additional_context.includes(skillBody('caveman')));
 });
 
 for (const mode of ['off', 'manual', 'commit']) {

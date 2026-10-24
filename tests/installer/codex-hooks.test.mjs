@@ -58,7 +58,7 @@ test('codex install merges exactly one SessionStart hook, even when run twice', 
   // compaction is what prunes the injected ruleset.
   assert.equal(ours[0].matcher, 'startup|resume|clear|compact');
   for (const rel of [HOOK_REL, 'caveman/hooks/caveman-config.js', 'caveman/hooks/package.json',
-    'caveman/skills/caveman/SKILL.md', 'caveman/skills/ultracave/SKILL.md', 'caveman/skills/megacave/SKILL.md']) {
+    'caveman/skills/caveman/SKILL.md', 'caveman/skills/ultracave/SKILL.md']) {
     assert.ok(fs.existsSync(path.join(codexHome, ...rel.split('/'))), `${rel} missing`);
   }
 });

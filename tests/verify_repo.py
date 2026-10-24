@@ -208,7 +208,6 @@ def verify_skill_frontmatter_upload_compatibility() -> None:
     skill_paths = [
         ROOT / "skills/caveman/SKILL.md",
         ROOT / "skills/ultracave/SKILL.md",
-        ROOT / "skills/megacave/SKILL.md",
         ROOT / "skills/caveman-commit/SKILL.md",
         ROOT / "skills/caveman-help/SKILL.md",
         ROOT / "skills/caveman-review/SKILL.md",
@@ -233,7 +232,6 @@ def verify_synced_files() -> None:
     skill_copies = [
         (ROOT / "plugins/caveman/skills/caveman/SKILL.md", skill_source),
         (ROOT / "plugins/caveman/skills/ultracave/SKILL.md", ROOT / "skills/ultracave/SKILL.md"),
-        (ROOT / "plugins/caveman/skills/megacave/SKILL.md", ROOT / "skills/megacave/SKILL.md"),
         (ROOT / "plugins/caveman/skills/cavecrew/SKILL.md", ROOT / "skills/cavecrew/SKILL.md"),
         (
             ROOT / "plugins/caveman/skills/caveman-compress/SKILL.md",
@@ -824,7 +822,7 @@ def verify_hook_install_flow() -> None:
             [bash, "src/hooks/caveman-statusline.sh"],
             env=hook_env,
         )
-        ensure("[MEGACAVE]" in statusline.stdout, "statusline badge output mismatch (legacy wenyan-ultra → megacave)")
+        ensure("[CAVEMAN]" in statusline.stdout, "statusline badge output mismatch (legacy wenyan-ultra → caveman)")
 
         reinstall = run([bash, "src/hooks/install.sh"], env=hook_env)
         ensure("Nothing to do" in reinstall.stdout, "install.sh should be idempotent")

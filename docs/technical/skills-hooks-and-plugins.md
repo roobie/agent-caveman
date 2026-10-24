@@ -7,7 +7,7 @@ plugins. Each has different permissions and failure behavior.
 
 `skills/caveman` asks an agent to communicate with less filler while preserving
 technical terms, code, error text, and necessary ordering. Three skills ship:
-`caveman` (the voice), `ultracave` (grammar stripped), `megacave` (classical Chinese). Auto-clarity relaxes
+`caveman` (the voice), `ultracave` (grammar stripped). Auto-clarity relaxes
 compression when terse phrasing could make security warnings or irreversible
 steps hard to understand.
 

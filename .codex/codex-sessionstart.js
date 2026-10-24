@@ -49,15 +49,15 @@ const os = require('os');
 // copy stays equal to the real one; tests/hooks/codex-sessionstart.test.mjs
 // asserts this copy does too.
 const FALLBACK_VALID_MODES = [
-  'off', 'caveman', 'ultracave', 'megacave',
+  'off', 'caveman', 'ultracave',
   'commit', 'review', 'compress'
 ];
 // Hand-copy of caveman-config.js LEGACY_MODES: a config still naming a
-// pre-three-skill level resolves the same way when degraded.
+// removed or pre-two-skill level resolves the same way when degraded.
 const FALLBACK_LEGACY_MODES = {
   lite: 'caveman', full: 'caveman', ultra: 'ultracave',
-  wenyan: 'megacave', 'wenyan-lite': 'megacave',
-  'wenyan-full': 'megacave', 'wenyan-ultra': 'megacave',
+  megacave: 'caveman', wenyan: 'caveman', 'wenyan-lite': 'caveman',
+  'wenyan-full': 'caveman', 'wenyan-ultra': 'caveman',
 };
 // Default-mode sources also accept the 'manual' startup policy, like the real
 // resolver's VALID_DEFAULT_MODES.
@@ -191,7 +191,7 @@ function main() {
     // fallback does. The old static echo's full text would go stale, which is
     // the defect class this hook exists to end.
     output = rulesetBanner(mode)
-      + '. Rules: skills/' + mode + '/SKILL.md. Switch: /caveman, /ultracave, /megacave.'
+      + '. Rules: skills/' + mode + '/SKILL.md. Switch: /caveman, /ultracave.'
       + ' Respond terse like smart caveman. All technical substance stay. Only fluff die.'
       + ' Code/commits/security: write normal.';
   }

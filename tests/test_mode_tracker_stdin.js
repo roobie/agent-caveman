@@ -136,16 +136,15 @@ test('envelope newline-separated form switches mode', () => {
   try {
     fs.writeFileSync(path.join(cfg, '.caveman-active'), 'caveman');
     send(cfg, { prompt: envelope('/caveman', 'wenyan-lite', true) });
-    assert.strictEqual(flagValue(cfg), 'megacave');
+    assert.strictEqual(flagValue(cfg), 'caveman');
   } finally {
     fs.rmSync(cfg, { recursive: true, force: true });
   }
 });
 
-test('/ultracave and /megacave envelopes (bare and namespaced) switch mode', () => {
+test('/ultracave envelopes (bare and namespaced) switch mode', () => {
   for (const [name, mode] of [
     ['/ultracave', 'ultracave'], ['/caveman:ultracave', 'ultracave'],
-    ['/megacave', 'megacave'], ['/caveman:megacave', 'megacave'],
   ]) {
     const cfg = makeConfigDir();
     try {
@@ -324,11 +323,11 @@ test('the rejected argument is never echoed back into model context', () => {
   }
 });
 
-test('the notice names the three mode commands, not the legacy levels', () => {
+test('the notice names the two mode commands, not the legacy levels', () => {
   const cfg = makeConfigDir();
   try {
     const ctx = contextOf(send(cfg, { prompt: '/caveman nope' }));
-    assert.match(ctx, /Modes: \/caveman, \/ultracave, \/megacave\./);
+    assert.match(ctx, /Modes: \/caveman, \/ultracave\./);
     assert.doesNotMatch(ctx, /lite|wenyan|ultra\b/, `legacy level names advertised: ${ctx}`);
   } finally {
     fs.rmSync(cfg, { recursive: true, force: true });
