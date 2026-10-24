@@ -61,7 +61,8 @@ test("every bootstrap pin names the same release", () => {
   const version = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
   assert.equal(`v${version}`, pins["install.sh"], "installer package version must match the pinned release");
 
-  for (const doc of ["README.md", "INSTALL.md"]) {
+  // README installs from this fork through `npx skills`, so only INSTALL.md carries bootstrap one-liners.
+  for (const doc of ["INSTALL.md"]) {
     const text = readFileSync(join(root, doc), "utf8");
     const refs = [...text.matchAll(/raw\.githubusercontent\.com\/JuliusBrussee\/caveman\/(v[\d.]+)\//g)].map((m) => m[1]);
     assert.ok(refs.length > 0, `${doc} must carry at least one pinned install one-liner`);
