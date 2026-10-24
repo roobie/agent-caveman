@@ -48,6 +48,8 @@ npx skills add roobie/agent-caveman -g
 
 One command. Skills land in every agent the `skills` tool knows. Needs Node.js 18+. One rock. That it.
 
+Skills alone fade: the agent slips back to normal prose as the chat grows. Hooks fix it. They re-teach the voice at session start and after every compaction, and nudge it each turn. On Claude Code the plugin below carries them. Skills-only installs skip them.
+
 | Agent | Command |
 |---|---|
 | Any agent, skills only | `npx skills add roobie/agent-caveman -g` |
