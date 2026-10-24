@@ -52,4 +52,4 @@ effective date.
 
 ## Contact
 
-Questions: contact@caveman.so
+Questions: open an issue on https://github.com/roobie/agent-caveman.

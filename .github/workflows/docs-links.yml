@@ -1,6 +1,5 @@
 name: docs-links
 
-# Weekly as well: docs.caveman.so pages can move without a change here.
 on:
   pull_request:
     paths:
@@ -11,8 +10,6 @@ on:
       - docs/technical/**
       - .github/scripts/check-doc-links.mjs
       - .github/workflows/docs-links.yml
-  schedule:
-    - cron: "5 7 * * 1"
   workflow_dispatch:
 
 permissions:

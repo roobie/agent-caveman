@@ -38,4 +38,4 @@ authorship and DCO sign-off.
   and `python3 tests/verify_repo.py`.
 - Match the surrounding style. Small, focused PRs review fastest.
 
-Questions → open a discussion or ping us at **hello@caveman.so**.
+Questions → open an issue on this repo.

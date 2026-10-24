@@ -32,4 +32,4 @@ real thing gets to be called Caveman. Misuse of the marks terminates your licens
 to use them (the code license is unaffected, but the confusion isn't allowed to
 stand).
 
-Questions, or want a logo/usage grant for an integration? → **hello@caveman.so**
+Questions, or want a logo/usage grant for an integration? → open an issue on this repo.
