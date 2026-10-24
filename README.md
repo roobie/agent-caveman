@@ -6,8 +6,6 @@ Figure from `git diff --shortstat $(git merge-base HEAD upstream/main) HEAD` at 
 
 <div align="center">
 
-<img src="docs/assets/caveman-logo-banner.png" alt="Caveman" width="720">
-
 # why many token when few do trick
 
 **Caveman make your AI agent say less. Code stay exact. Brain still big.**
