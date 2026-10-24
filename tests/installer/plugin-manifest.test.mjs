@@ -15,9 +15,7 @@ function hookCommands(manifest, eventName) {
     .filter(Boolean);
 }
 
-test('plugin manifest wires SessionEnd stats recorder', () => {
+test('plugin manifest wires no SessionEnd hook', () => {
   const manifest = JSON.parse(fs.readFileSync(PLUGIN_MANIFEST, 'utf8'));
-  const commands = hookCommands(manifest, 'SessionEnd');
-  assert.equal(commands.length, 1);
-  assert.match(commands[0], /caveman-stats\.js" --record$/);
+  assert.deepEqual(hookCommands(manifest, 'SessionEnd'), []);
 });

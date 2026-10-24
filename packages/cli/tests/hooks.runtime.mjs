@@ -211,10 +211,6 @@ test("native experiment profiles select real Core and shrink behavior", async ()
   const caveHome = mkdtempSync(join(tmpdir(), "cave-native-profile-"));
   writeWrapConfig(caveHome, { proxy: false });
   const base = { ...process.env, HOME: caveHome, CAVEMAN_HOME: caveHome, CAVEMAN_TELEMETRY: "0" };
-  const lean = await runNativeHook("claude", { hook_event_name: "SessionStart", session_id: "lean" }, {
-    ...base, CAVEMAN_NATIVE_MODE: "safe", CAVEMAN_NATIVE_PROFILE: "core-lean-build",
-  });
-  assert.match(JSON.parse(lean.stdout).hookSpecificOutput.additionalContext, /# Lean build/);
   const noShrink = await runHook({ tool_name: "Bash", tool_input: { command: "git status" } }, {
     ...base, CAVEMAN_NATIVE_MODE: "safe", CAVEMAN_NATIVE_PROFILE: "core",
   });

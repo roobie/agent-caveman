@@ -134,8 +134,8 @@ test("MCP install and uninstall use custom Codex config only", (t) => {
 
 test("skill install targets custom Codex home", (t) => {
   const fx = fixture(t);
-  const result = fx.run(["skills", "install", "caveman-learn", "--agent", "codex", "--no-pixel"]);
+  const result = fx.run(["skills", "install", "caveman", "--agent", "codex", "--no-pixel"]);
   assert.equal(result.status, 0, result.stderr);
-  assert.ok(existsSync(join(fx.custom, "skills", "caveman-learn", "SKILL.md")));
+  assert.ok(existsSync(join(fx.custom, "skills", "caveman", "SKILL.md")));
   assert.equal(existsSync(join(fx.home, ".codex", "skills")), false);
 });

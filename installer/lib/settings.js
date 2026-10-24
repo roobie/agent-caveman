@@ -219,7 +219,7 @@ function addCommandHook(settings, event, opts) {
 const MANAGED_HOOK_BASENAMES = new Set([
   'caveman-activate.js',
   'caveman-mode-tracker.js',
-  'caveman-stats.js',
+  'caveman-stats.js', // retired recorder: kept so uninstall still strips old SessionEnd entries
   'caveman-statusline.sh',
   'caveman-statusline.ps1',
 ]);

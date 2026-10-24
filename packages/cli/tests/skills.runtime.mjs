@@ -12,9 +12,7 @@ const packageParent = join(here, "..", "..");
 const canonicalSkillsRoot = [join(packageParent, "skills"), join(packageParent, "..", "skills")]
   .find((candidate) => existsSync(join(candidate, "registry.json")));
 assert.ok(canonicalSkillsRoot, "canonical skills registry must exist beside public/ or packages/");
-const canonicalLearn = join(canonicalSkillsRoot, "caveman-learn", "SKILL.md");
 const canonicalCaveman = join(canonicalSkillsRoot, "caveman", "SKILL.md");
-const canonicalExplore = join(canonicalSkillsRoot, "caveman-explore", "SKILL.md");
 
 function run(extraArgs, extraEnv = {}) {
   const env = { ...process.env, NO_COLOR: "1", ...extraEnv };
@@ -46,23 +44,6 @@ console.log(JSON.stringify({ summary: true, pages: 1, textEstTokens: 5000, image
 
 // `caveman skills install --dir <tmp>` writes the skill, byte-identical to the
 // canonical artifact (the drift guard — the binary embeds a copy).
-test("skills install writes caveman-learn SKILL.md, matching the canonical artifact", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "cave-skill-"));
-  const out = await run(["install", "--dir", dir, "--no-pixel"]);
-  assert.equal(out.code, 0, `skills install exited ${out.code}: ${out.stderr}`);
-  const dest = join(dir, "SKILL.md");
-  assert.ok(existsSync(dest), "must write SKILL.md");
-  const written = readFileSync(dest, "utf8");
-  assert.match(written, /^---\nname: caveman-learn\n/, "valid skill frontmatter");
-  assert.match(written, /net-token-negative gate/, "carries the net-token-negative gate");
-  assert.match(written, /never make the agent dumber/i, "carries the dumber-guard");
-  assert.equal(
-    written,
-    readFileSync(canonicalLearn, "utf8"),
-    "the CLI-embedded skill must stay byte-identical to public/skills/caveman-learn/SKILL.md",
-  );
-});
-
 test("skills install writes caveman SKILL.md, matching the canonical artifact", async () => {
   const dir = mkdtempSync(join(tmpdir(), "cave-skill-caveman-"));
   const out = await run(["install", "caveman", "--dir", dir, "--no-pixel"]);
@@ -78,40 +59,12 @@ test("skills install writes caveman SKILL.md, matching the canonical artifact", 
   );
 });
 
-test("skills install writes caveman-explore SKILL.md, matching canonical artifact", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "cave-skill-explore-"));
-  const out = await run(["install", "caveman-explore", "--agent", "claude", "--dir", dir, "--no-pixel"]);
-  assert.equal(out.code, 0, `explore skill install exited ${out.code}: ${out.stderr}`);
-  const dest = join(dir, "SKILL.md");
-  assert.ok(existsSync(dest), "must write SKILL.md");
-  const written = readFileSync(dest, "utf8");
-  assert.match(written, /^---\nname: caveman-explore\n/, "frontmatter name must match directory");
-  assert.match(written, /IN PARALLEL/, "must carry parallel-call contract");
-  assert.match(written, /ONLY an evidence block/, "must carry citation-only contract");
-  assert.equal(
-    written,
-    readFileSync(canonicalExplore, "utf8"),
-    "CLI-embedded skill must stay byte-identical to public/skills/caveman-explore/SKILL.md",
-  );
-});
-
 // Codex gets the skill as a standard SKILL.md directory.
 test("skills install --agent codex writes a skill directory", async () => {
   const dir = mkdtempSync(join(tmpdir(), "cave-skill-codex-"));
-  const out = await run(["install", "--agent", "codex", "--dir", dir, "--no-pixel"]);
+  const out = await run(["install", "caveman", "--agent", "codex", "--dir", dir, "--no-pixel"]);
   assert.equal(out.code, 0, `codex install exited ${out.code}: ${out.stderr}`);
   assert.ok(existsSync(join(dir, "SKILL.md")), "must write the codex skill file");
-});
-
-test("skills install caveman-explore --agent codex fails closed with unchanged message", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "cave-skill-explore-codex-"));
-  const out = await run(["install", "caveman-explore", "--agent", "codex", "--dir", dir, "--no-pixel"]);
-  assert.equal(out.code, 2, "codex explorer install must fail closed");
-  assert.match(
-    out.stderr,
-    /caveman explore: only --agent claude is wired today \(codex needs verified transcript isolation first\)\. got: codex/,
-  );
-  assert.ok(!existsSync(join(dir, "SKILL.md")), "guard must run before writing");
 });
 
 test("skills install auto-pixels when the engine renders a profitable skill", async () => {
@@ -140,49 +93,24 @@ test("skills list --json exposes closed metadata and deterministic suites", asyn
   const out = await run(["list", "--json"]);
   assert.equal(out.code, 0, out.stderr);
   const value = JSON.parse(out.stdout);
-  assert.deepEqual(
-    value.suites["agent-native"],
-    ["caveman-setup", "caveman-discover", "caveman-evidence-review", "caveman-optimize", "caveman-manage"],
-  );
+  assert.deepEqual(value.suites.output, ["caveman", "ultracave"]);
   assert.deepEqual(
     value.skills.map((skill) => skill.id).sort(),
-    [
-      "caveman",
-      "caveman-discover",
-      "caveman-evidence-review",
-      "caveman-explore",
-      "caveman-learn",
-      "caveman-manage",
-      "caveman-optimize",
-      "caveman-setup",
-      "ultracave",
-    ],
+    ["caveman", "ultracave"],
   );
 });
 
 test("skills preview returns canonical content without writing", async () => {
-  const out = await run(["preview", "caveman-evidence-review"]);
+  const out = await run(["preview", "ultracave"]);
   assert.equal(out.code, 0, out.stderr);
-  assert.equal(out.stdout, readFileSync(join(canonicalSkillsRoot, "caveman-evidence-review", "SKILL.md"), "utf8"));
+  assert.equal(out.stdout, readFileSync(join(canonicalSkillsRoot, "ultracave", "SKILL.md"), "utf8"));
 });
 
-test("caveman-optimize uses report-only observations and cannot select retired money ids", () => {
-  const skill = readFileSync(join(canonicalSkillsRoot, "caveman-optimize", "SKILL.md"), "utf8");
-  assert.match(skill, /report_only_observations/);
-  for (const id of ["context-window-profile", "tool-catalog-profile", "tool-output-size-profile", "exploration-load-profile"]) {
-    assert.match(skill, new RegExp(`\\b${id}\\b`), `${id} must be handled as an exact report-only observation`);
-  }
-  assert.match(skill, /explicit operator choice/i);
-  assert.match(skill, /paired eval/i);
-  assert.match(skill, /Never select or apply these retired ids:[\s\S]*context-window-bloat[\s\S]*tool-catalog-utilization[\s\S]*verbose-tool-output/);
-  assert.doesNotMatch(skill, /savings_usd_base|Inferred headroom|\$<[^>]+>\/day/);
-});
-
-test("agent-native suite installs every canonical skill byte-identically", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "cave-agent-native-suite-"));
-  const out = await run(["install", "--suite", "agent-native", "--agent", "claude", "--dir", dir, "--no-pixel"]);
+test("output suite installs every canonical skill byte-identically", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "cave-output-suite-"));
+  const out = await run(["install", "--suite", "output", "--agent", "claude", "--dir", dir, "--no-pixel"]);
   assert.equal(out.code, 0, out.stderr);
-  for (const id of ["caveman-setup", "caveman-discover", "caveman-evidence-review", "caveman-optimize", "caveman-manage"]) {
+  for (const id of ["caveman", "ultracave"]) {
     assert.equal(
       readFileSync(join(dir, id, "SKILL.md"), "utf8"),
       readFileSync(join(canonicalSkillsRoot, id, "SKILL.md"), "utf8"),

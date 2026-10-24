@@ -268,29 +268,6 @@ test('active caveman reinforcement: skill thesis plus answer-scope rule (#303, #
   }
 });
 
-// ---------- #618: stats delivery via additionalContext, not decision:block ----------
-
-test('/caveman-stats emits hookSpecificOutput.additionalContext, not decision:block', () => {
-  const cfg = makeConfigDir();
-  try {
-    const sess = makeSession(cfg, [
-      { type: 'assistant', message: { usage: { output_tokens: 350 } } },
-    ]);
-    fs.writeFileSync(path.join(cfg, '.caveman-active'), 'full');
-    const r = send(cfg, { prompt: '/caveman-stats', transcript_path: sess });
-    const parsed = JSON.parse(r.stdout);
-    assert.strictEqual(parsed.decision, undefined, 'old decision:block shape must be gone');
-    assert.strictEqual(parsed.hookSpecificOutput.hookEventName, 'UserPromptSubmit');
-    assert.ok(
-      /print this stats block verbatim/i.test(parsed.hookSpecificOutput.additionalContext),
-      'additionalContext must instruct the model to relay the block verbatim'
-    );
-    assert.match(parsed.hookSpecificOutput.additionalContext, /Saved 650 output tokens|Caveman Stats/);
-  } finally {
-    fs.rmSync(cfg, { recursive: true, force: true });
-  }
-});
-
 // ---------- unresolved /caveman level (#838) ----------
 
 function contextOf(result) {

@@ -374,7 +374,6 @@ def verify_manifests_and_syntax() -> None:
         "caveman-parse.js",
         "caveman-activate.js",
         "caveman-mode-tracker.js",
-        "caveman-stats.js",
         "caveman-statusline.sh",
         "caveman-statusline.ps1",
         "cavecrew-model-overrides.js",
@@ -738,7 +737,7 @@ def verify_hook_install_flow() -> None:
             "SubagentStart hook missing after install",
         )
         ensure("UserPromptSubmit" in hooks, "UserPromptSubmit hook missing after install")
-        ensure("SessionEnd" in hooks, "SessionEnd hook missing after install")
+        ensure("SessionEnd" not in hooks, "SessionEnd hook should no longer be installed")
 
         activate = run(
             ["node", "src/hooks/caveman-activate.js"],

@@ -421,8 +421,7 @@ test('expandedTpl recognizes the independent-mode command templates (#602 drift)
 
 test('expandedTpl: no non-activation opencode template switches a prose mode', () => {
   // Every shipped command file, expanded the way opencode delivers it: front
-  // matter stripped, $ARGUMENTS empty. /caveman-help listed "Activate caveman"
-  // in its table, which flipped ultracave back to caveman (or turned it on).
+  // matter stripped, $ARGUMENTS empty.
   const dir = path.join(__dirname, '..', 'src', 'plugins', 'opencode', 'commands');
   const PROSE = new Set(['caveman', 'ultracave']);
   const checked = [];
@@ -440,15 +439,6 @@ test('expandedTpl: no non-activation opencode template switches a prose mode', (
   for (const f of ['caveman-commit.md', 'caveman-review.md', 'caveman-compress.md']) {
     assert.ok(checked.includes(f), `${f} not checked`);
   }
-});
-
-test('expandedTpl: the help card opener short-circuits even a trigger in its body', () => {
-  assert.strictEqual(
-    parseModeChange('Show the caveman quick-reference card.\n\n| /caveman | Activate caveman |\nstop caveman', {
-      ...defaultCaveman, expandedTpl: true,
-    }),
-    null
-  );
 });
 
 test('without expandedTpl, template bodies are inert plain text', () => {

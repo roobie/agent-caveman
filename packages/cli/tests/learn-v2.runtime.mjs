@@ -270,12 +270,12 @@ test("learn advanced JSON is pretty only for TTY output", () => {
   assert.equal(formatLearnProxyJSON(raw, true), '{\n  "z": 1,\n  "a": 2\n}\n');
 });
 
-test("learn v2 skill embedded by CLI stays byte-identical to canonical skill", async () => {
+test("skill embedded by CLI stays byte-identical to canonical skill", async () => {
   const isolated = isolatedCliEnv();
   try {
-    const out = await runCli(["skills", "preview", "caveman-learn"], { env: isolated.env });
+    const out = await runCli(["skills", "preview", "caveman"], { env: isolated.env });
     assert.equal(out.code, 0, out.stderr);
-    assert.equal(out.stdout, readFileSync(new URL("../../../skills/caveman-learn/SKILL.md", import.meta.url), "utf8"));
+    assert.equal(out.stdout, readFileSync(new URL("../../../skills/caveman/SKILL.md", import.meta.url), "utf8"));
   } finally {
     isolated.cleanup();
   }

@@ -61,7 +61,6 @@ const HOOK_FILES = [
   'caveman-parse.js',
   'caveman-activate.js',
   'caveman-mode-tracker.js',
-  'caveman-stats.js',
   'caveman-statusline.sh',
   'caveman-statusline.ps1',
   'cavecrew-model-overrides.js',
@@ -621,8 +620,8 @@ async function installClaude(ctx) {
   //   --no-hooks       → skip
   //   --with-hooks     → wire (warn if the plugin manifest also wires them)
   //   default / --all  → wire only if the plugin install did NOT succeed.
-  // The plugin manifest already wires SessionStart + UserPromptSubmit +
-  // SessionEnd when the plugin install succeeds; wiring them again in
+  // The plugin manifest already wires SessionStart + UserPromptSubmit
+  // when the plugin install succeeds; wiring them again in
   // settings.json fires both per event (two CAVEMAN MODE blocks, two
   // reinforcement lines).
   let shouldWireHooks;
@@ -638,7 +637,7 @@ async function installClaude(ctx) {
     // 'auto'
     shouldWireHooks = !pluginInstallSucceeded;
     if (!shouldWireHooks) {
-      note('  hooks: plugin manifest handles SessionStart + SubagentStart + UserPromptSubmit + SessionEnd');
+      note('  hooks: plugin manifest handles SessionStart + SubagentStart + UserPromptSubmit');
       note('  (pass --with-hooks to also wire standalone hooks in settings.json)');
       results.skipped.push(['claude-hooks', 'plugin manifest handles hooks']);
       // An earlier run whose plugin install failed wired standalone hooks. The
@@ -1792,7 +1791,7 @@ async function installHooks(ctx) {
   if (opts.dryRun) {
     note(`  would mkdir -p ${hooksDir}`);
     for (const f of HOOK_FILES) note(`  would install ${path.join(hooksDir, f)}`);
-    note(`  would merge SessionStart + SubagentStart + UserPromptSubmit + SessionEnd + statusline into ${settingsPath}`);
+    note(`  would merge SessionStart + SubagentStart + UserPromptSubmit + statusline into ${settingsPath}`);
     return 'ok';
   }
 
@@ -1889,7 +1888,6 @@ async function installHooks(ctx) {
   const node = absoluteNodePath();
   const activate = path.join(hooksDir, 'caveman-activate.js');
   const tracker  = path.join(hooksDir, 'caveman-mode-tracker.js');
-  const stats = path.join(hooksDir, 'caveman-stats.js');
   const statusline = path.join(hooksDir, 'caveman-statusline.sh');
 
   // Migrate any legacy bare-`node` invocations of our managed scripts.
@@ -1915,16 +1913,6 @@ async function installHooks(ctx) {
     marker: 'caveman-mode-tracker',
     timeout: 30,
     statusMessage: 'Tracking caveman mode...',
-  });
-
-  // SessionEnd — silently record a lifetime stats snapshot. Keep the `--record`
-  // flag unquoted (path only is quoted) so the command matches the plugin
-  // manifest and standalone installers byte-for-byte.
-  SETTINGS.addCommandHook(settings, 'SessionEnd', {
-    command: `${PLATFORM_PATHS.hookCommand(node, [stats])} --record`,
-    marker: 'caveman-stats',
-    timeout: 5,
-    statusMessage: 'Recording caveman stats...',
   });
 
   // Statusline — set if absent or already pointing at our script.
@@ -2686,7 +2674,7 @@ FLAGS
                         pass --with-mcp-shrink="<cmd>" to add it.)
   --minimal             Just the plugin/extension install.
   --with-hooks          Claude Code: install SessionStart/SubagentStart/
-                        UserPromptSubmit/SessionEnd hooks + statusline badge.
+                        UserPromptSubmit hooks + statusline badge.
                         Codex: SessionStart hook in \$CODEX_HOME/hooks.json.
                         Cursor sessionStart hook, Copilot CLI session hook.
                         (Default: auto. Codex, Cursor and Copilot CLI get

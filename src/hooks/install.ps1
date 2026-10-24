@@ -1,6 +1,5 @@
 # caveman — one-command hook installer for Claude Code (Windows PowerShell)
-# Installs: SessionStart hook (auto-load rules) + SubagentStart hook (subagent mode) + UserPromptSubmit hook (mode tracking) + SessionEnd stats recorder
-# Usage: powershell -ExecutionPolicy Bypass -File src\hooks\install.ps1
+# Installs: SessionStart hook (auto-load rules) + SubagentStart hook (subagent mode) + UserPromptSubmit hook (mode tracking)# Usage: powershell -ExecutionPolicy Bypass -File src\hooks\install.ps1
 #   or:  powershell -ExecutionPolicy Bypass -File src\hooks\install.ps1 -Force
 #   or (remote, no -Force support via pipe):
 #        irm https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/hooks/install.ps1 | iex
@@ -24,7 +23,7 @@ $HooksDir = Join-Path $ClaudeDir "hooks"
 $Settings = Join-Path $ClaudeDir "settings.json"
 $RepoUrl = "https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/hooks"
 
-$HookFiles = @("package.json", "caveman-config.js", "caveman-parse.js", "caveman-activate.js", "caveman-mode-tracker.js", "caveman-stats.js", "caveman-statusline.sh", "caveman-statusline.ps1", "cavecrew-model-overrides.js")
+$HookFiles = @("package.json", "caveman-config.js", "caveman-parse.js", "caveman-activate.js", "caveman-mode-tracker.js","caveman-statusline.sh", "caveman-statusline.ps1", "cavecrew-model-overrides.js")
 
 # Resolve source — works from repo clone or remote
 $ScriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { $null }
@@ -103,7 +102,6 @@ if (-not $Force) {
             $HooksWired = (& $hasCavemanHook "SessionStart" "caveman-activate.js") `
                 -and (& $hasCavemanHook "SubagentStart" "caveman-activate.js") `
                 -and (& $hasCavemanHook "UserPromptSubmit" "caveman-mode-tracker.js") `
-                -and (& $hasCavemanHook "SessionEnd" "caveman-stats.js")
             $HasStatusLine = $null -ne $settingsObj.statusLine
         } catch {
             $HooksWired = $false
@@ -230,22 +228,6 @@ if (!hasPrompt) {
   });
 }
 
-// SessionEnd
-if (!settings.hooks.SessionEnd) settings.hooks.SessionEnd = [];
-const hasEnd = settings.hooks.SessionEnd.some(e =>
-  e.hooks && e.hooks.some(h => h.command && h.command.includes('caveman-stats.js'))
-);
-if (!hasEnd) {
-  settings.hooks.SessionEnd.push({
-    hooks: [{
-      type: 'command',
-      command: 'node "' + hooksDir + '/caveman-stats.js" --record',
-      timeout: 5,
-      statusMessage: 'Recording caveman stats...'
-    }]
-  });
-}
-
 // Statusline
 if (!settings.statusLine) {
   settings.statusLine = {
@@ -291,5 +273,4 @@ Write-Host "  - SessionStart hook: auto-loads caveman rules every session"
 Write-Host "  - SubagentStart hook: subagents inherit the session's active mode"
 Write-Host "  - Mode tracker hook: updates statusline badge when you switch modes"
 Write-Host "    (/caveman, /ultracave,/caveman-commit, etc.)"
-Write-Host "  - SessionEnd hook: records lifetime stats silently"
-Write-Host "  - Statusline badge: shows [CAVEMAN], [ULTRACAVE] or [MEGACAVE]"
+Write-Host "  - Statusline badge: shows [CAVEMAN] or [ULTRACAVE]"

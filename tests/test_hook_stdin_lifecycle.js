@@ -24,7 +24,6 @@ const { spawn } = require('child_process');
 const HOOKS = path.resolve(__dirname, '..', 'src', 'hooks');
 const ACTIVATE = path.join(HOOKS, 'caveman-activate.js');
 const TRACKER = path.join(HOOKS, 'caveman-mode-tracker.js');
-const STATS = path.join(HOOKS, 'caveman-stats.js');
 
 // A headless runner exports CLAUDE_CODE_ENTRYPOINT=sdk-*, which starts
 // SessionStart under the manual policy (#377). Spawns copy process.env.
@@ -125,28 +124,6 @@ console.log('hook stdin lifecycle — must not wait on a lagging pipe close\n');
       fs.readFileSync(path.join(dir, '.caveman-active'), 'utf8'), 'ultracave',
       'the flag write must land even though stdin never closed',
     );
-  });
-
-  // SessionEnd: the host is shutting down, so a recorder that waits for EOF
-  // holds session exit open until the host's budget kills it.
-  await test('stats --record: records after a complete payload without waiting for EOF', async (dir) => {
-    const transcript = path.join(dir, 'sess.jsonl');
-    fs.writeFileSync(transcript, JSON.stringify({ type: 'assistant', message: { usage: { output_tokens: 7 } } }));
-    const payload = JSON.stringify({ session_id: 'end-1', transcript_path: transcript, hook_event_name: 'SessionEnd', reason: 'other' });
-    const r = await runHoldingPipeOpen(STATS, payload, dir, ['--record']);
-    assert.strictEqual(r.code, 0, `expected clean exit, got ${r.code}`);
-    assert.strictEqual(r.stdout, '', 'SessionEnd recorder must stay silent');
-    const entry = JSON.parse(fs.readFileSync(path.join(dir, '.caveman-history.jsonl'), 'utf8').trim());
-    assert.strictEqual(entry.session_id, 'end-1');
-    assert.strictEqual(entry.output_tokens, 7);
-  });
-
-  await test('stats --record: gives up on the watchdog when no payload ever arrives', async (dir) => {
-    const r = await runHoldingPipeOpen(STATS, null, dir, ['--record']);
-    assert.strictEqual(r.code, 0, `expected clean exit, got ${r.code}`);
-    assert.strictEqual(r.stdout, '');
-    assert.strictEqual(fs.existsSync(path.join(dir, '.caveman-history.jsonl')), false,
-      'no payload means no transcript, so nothing may be recorded');
   });
 
   console.log(`\n${passed} passed, ${failed} failed`);

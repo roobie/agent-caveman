@@ -50,9 +50,8 @@ Common thread: output shrink, but an agent run's bill is mostly input and cache 
 
 ## Measure it yourself
 
-1. `/caveman-stats` (Claude Code) reads the session log and prints recorded output/cache-read counts and mode attribution. It reports savings as unknown because that transcript has no measured comparison without Caveman. A benchmark on other tasks would not verify savings for this session.
-2. Run same task with and without Caveman, then compare provider usage or billing page. That A/B outranks repository estimates.
-3. Reproduce repository numbers with `benchmarks/run.py` (Anthropic key required) and `evals/measure.py` (offline committed snapshot).
+1. Run same task with and without Caveman, then compare provider usage or billing page. That A/B outranks repository estimates. A single session log cannot show savings: it has no comparison run without Caveman.
+2. Reproduce repository numbers with `benchmarks/run.py` (Anthropic key required) and `evals/measure.py` (offline committed snapshot).
 
 ## Rule of thumb
 

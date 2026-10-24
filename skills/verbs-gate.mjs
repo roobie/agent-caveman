@@ -167,7 +167,7 @@ export function scanSkillBody(id, body, surfaces) {
   const V = (message) => violations.push(`${id}: ${message}`);
 
   // CLI commands: `caveman <verb> [<sub>]` / `cave <verb> [<sub>]`. The lookbehind
-  // rejects `/caveman` (slash command), `@caveman-ai/sdk`, `caveman-learn`, and
+  // rejects `/caveman` (slash command), `@caveman-ai/sdk`, `caveman-commit`, and
   // `foo.cave`.
   const cliRe = /(?<![\w/@.\-])(caveman|cave)[ \t]+([a-z][\w-]*)(?:[ \t]+([a-z][\w-]*))?/g;
   for (const m of body.matchAll(cliRe)) {

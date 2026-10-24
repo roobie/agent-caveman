@@ -2,7 +2,7 @@
 //
 // These run in-process (no subprocess), so they are the fast feedback loop for
 // the storage layer that caveman-activate.js, caveman-mode-tracker.js and
-// caveman-stats.js all sit on top of.
+// the other hooks all sit on top of.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';

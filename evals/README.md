@@ -24,10 +24,8 @@ this harness did and is why its numbers were inflated.
 
 `snapshots/results.json` was generated on `claude-opus-5-5` with Claude
 Code 2.1.288 (2026-10-02), with the response-style skills of that date as the
-skill arms: `caveman`, `ultracave`, `megacave`. `megacave` has since been
-removed; regenerating the snapshot yields only `caveman` and `ultracave`. The
-other `skills/*` directories are workflow skills, not response styles, so they
-are left out.
+skill arms: `caveman`, `ultracave`. The other `skills/*` directories are
+workflow skills, not response styles, so they are left out.
 
 ```bash
 CAVEMAN_EVAL_MODEL=claude-opus-5-5 CAVEMAN_EVAL_SKILLS=caveman,ultracave \

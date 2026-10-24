@@ -178,29 +178,6 @@ test('missing caveman-parse.js: exits 0, emits nothing', () => {
   });
 });
 
-console.log('\ncaveman-stats.js — missing caveman-config.js');
-
-test('prints one actionable line instead of a stack trace', () => {
-  withInstall(['caveman-config.js'], ({ hooks }) => {
-    const r = runHook(hooks, 'caveman-stats.js');
-    assert.notStrictEqual(r.status, 0, 'stats has no useful degraded output — must fail loudly');
-    assert.match(r.stderr, /caveman-config\.js is missing/);
-    assert.doesNotMatch(r.stderr, /MODULE_NOT_FOUND/);
-    assert.doesNotMatch(r.stderr, /Require stack:/);
-    assert.ok(r.stderr.trim().split('\n').length <= 3, `expected a short message, got:\n${r.stderr}`);
-  });
-});
-
-// As a SessionEnd hook there is no report to fail loudly into: any stderr or
-// non-zero exit surfaces as a hook error while the user is quitting.
-test('--record (SessionEnd) exits 0 silently instead', () => {
-  withInstall(['caveman-config.js'], ({ hooks }) => {
-    const r = runHook(hooks, 'caveman-stats.js', { args: ['--record'], stdin: '{"session_id":"x"}' });
-    assert.strictEqual(r.status, 0, r.stderr);
-    assert.strictEqual(r.stdout + r.stderr, '');
-  });
-});
-
 console.log('\nmissing vs. broken is distinguished');
 
 test('a sibling that loads but throws is not reported as an incomplete install', () => {
@@ -270,15 +247,6 @@ test('activate: stale config module degrades instead of throwing TypeError', () 
     assert.doesNotMatch(r.stderr, /TypeError/, 'must not surface a raw TypeError');
     assert.match(r.stderr, /missing expected exports/, 'must name the real cause');
     assert.match(r.stdout, /CAVEMAN MODE ACTIVE/, 'degraded session still gets its rules');
-  });
-});
-
-test('stats: stale config module exits with one line, not a TypeError', () => {
-  withStaleConfig('module.exports = { readFlag: () => null };\n', ({ hooks }) => {
-    const r = runHook(hooks, 'caveman-stats.js');
-    assert.notStrictEqual(r.status, 0);
-    assert.doesNotMatch(r.stderr, /TypeError/);
-    assert.match(r.stderr, /missing expected exports/);
   });
 });
 

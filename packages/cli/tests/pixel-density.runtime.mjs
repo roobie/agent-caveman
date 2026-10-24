@@ -102,7 +102,7 @@ test("skills install --density (no skill name) installs the default and forwards
   const out = await runSkills(["--density", "balanced", "--dir", dir], { CAVEMAN_ENGINE_BIN: bin });
   assert.equal(out.code, 0, out.output);
   assert.doesNotMatch(out.output, /unknown skill/);
-  assert.ok(existsSync(join(dir, "SKILL.md")), "default skill (caveman-learn) must be installed");
+  assert.ok(existsSync(join(dir, "SKILL.md")), "default skill must be installed");
   const argv = JSON.parse(readFileSync(argvFile, "utf8"));
   const d = argv.indexOf("--density");
   assert.ok(d > 0 && argv[d + 1] === "balanced", `--density not forwarded through skills install: ${argv.join(" ")}`);

@@ -81,11 +81,11 @@ test("Gemini home override points to the parent of .gemini and need not already 
 test("Claude user skill install honors its profile while project skills remain in the project", (t) => {
   const fx = fixture(t);
   const env = { CLAUDE_CONFIG_DIR: relative(fx.root, fx.custom) };
-  succeeds(fx.run(["skills", "install", "caveman-learn", "--agent", "claude", "--user", "--no-pixel"], env));
-  assert.ok(existsSync(join(fx.custom, "skills", "caveman-learn", "SKILL.md")));
+  succeeds(fx.run(["skills", "install", "caveman", "--agent", "claude", "--user", "--no-pixel"], env));
+  assert.ok(existsSync(join(fx.custom, "skills", "caveman", "SKILL.md")));
   assert.equal(existsSync(join(fx.home, ".claude")), false);
-  succeeds(fx.run(["skills", "install", "caveman-learn", "--agent", "claude", "--no-pixel"], env));
-  assert.ok(existsSync(join(fx.root, ".claude", "skills", "caveman-learn", "SKILL.md")));
+  succeeds(fx.run(["skills", "install", "caveman", "--agent", "claude", "--no-pixel"], env));
+  assert.ok(existsSync(join(fx.root, ".claude", "skills", "caveman", "SKILL.md")));
 });
 
 for (const [agent, variable] of [["claude", "CLAUDE_CONFIG_DIR"], ["codex", "CODEX_HOME"]]) {

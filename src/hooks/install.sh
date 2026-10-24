@@ -1,7 +1,6 @@
 #!/bin/bash
 # caveman — one-command hook installer for Claude Code
-# Installs: SessionStart hook (auto-load rules) + SubagentStart hook (subagent mode) + UserPromptSubmit hook (mode tracking) + SessionEnd stats recorder
-# Usage: bash src/hooks/install.sh
+# Installs: SessionStart hook (auto-load rules) + SubagentStart hook (subagent mode) + UserPromptSubmit hook (mode tracking)# Usage: bash src/hooks/install.sh
 #   or:  bash <(curl -s https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/hooks/install.sh)
 #   or:  bash src/hooks/install.sh --force   (re-install over existing hooks)
 set -e
@@ -37,7 +36,7 @@ HOOKS_DIR="$CLAUDE_DIR/hooks"
 SETTINGS="$CLAUDE_DIR/settings.json"
 REPO_URL="https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/hooks"
 
-HOOK_FILES=("package.json" "caveman-config.js" "caveman-parse.js" "caveman-activate.js" "caveman-mode-tracker.js" "caveman-stats.js" "caveman-statusline.sh" "cavecrew-model-overrides.js")
+HOOK_FILES=("package.json" "caveman-config.js" "caveman-parse.js" "caveman-activate.js" "caveman-mode-tracker.js" "caveman-statusline.sh" "cavecrew-model-overrides.js")
 
 # Resolve source — works from repo clone or curl pipe
 SCRIPT_DIR=""
@@ -106,7 +105,6 @@ if [ "$FORCE" -eq 0 ]; then
         hasCavemanHook('SessionStart', 'caveman-activate.js') &&
         hasCavemanHook('SubagentStart', 'caveman-activate.js') &&
         hasCavemanHook('UserPromptSubmit', 'caveman-mode-tracker.js') &&
-        hasCavemanHook('SessionEnd', 'caveman-stats.js') &&
         !!settings.statusLine
           ? 0
           : 1
@@ -231,22 +229,6 @@ CAVEMAN_SETTINGS="$SETTINGS" CAVEMAN_HOOKS_DIR="$HOOKS_DIR" CAVEMAN_SETTINGS_HEL
     });
   }
 
-  // SessionEnd — silently record a lifetime stats snapshot
-  if (!settings.hooks.SessionEnd) settings.hooks.SessionEnd = [];
-  const hasEnd = settings.hooks.SessionEnd.some(e =>
-    e.hooks && e.hooks.some(h => h.command && h.command.includes('caveman-stats.js'))
-  );
-  if (!hasEnd) {
-    settings.hooks.SessionEnd.push({
-      hooks: [{
-        type: 'command',
-        command: 'node \"' + hooksDir + '/caveman-stats.js\" --record',
-        timeout: 5,
-        statusMessage: 'Recording caveman stats...'
-      }]
-    });
-  }
-
   // Statusline — wire caveman badge (report if skipped)
   if (!settings.statusLine) {
     settings.statusLine = {
@@ -279,5 +261,4 @@ echo "  - SessionStart hook: auto-loads caveman rules every session"
 echo "  - SubagentStart hook: subagents inherit the session's active mode"
 echo "  - Mode tracker hook: updates statusline badge when you switch modes"
 echo "    (/caveman, /ultracave,/caveman-commit, etc.)"
-echo "  - SessionEnd hook: records lifetime stats silently"
-echo "  - Statusline badge: shows [CAVEMAN], [ULTRACAVE] or [MEGACAVE]"
+echo "  - Statusline badge: shows [CAVEMAN] or [ULTRACAVE]"

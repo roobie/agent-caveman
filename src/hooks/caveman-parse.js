@@ -64,8 +64,8 @@ const MODE_COMMANDS = {
 const INDEPENDENT_MODES = new Set(['commit', 'review', 'compress']);
 
 // Natural-language triggers run over the whole prompt, so any pasted text that
-// merely QUOTES them fired them — a bug report quoting the /caveman-help card's
-// own line ("Say \"stop caveman\" or \"normal mode\".") switched caveman off
+// merely QUOTES them fired them — a bug report quoting the line
+// "Say \"stop caveman\" or \"normal mode\"." switched caveman off
 // mid-task (#838). #537's envelope unwrap closed the slash-command path; this
 // is the prose path, which needs no envelope.
 //
@@ -236,10 +236,6 @@ function parseModeChange(promptRaw, options) {
   // prompt that CITES a trigger does not fire it. A prompt that starts with a
   // slash is a command invocation: its own text must not toggle our mode,
   // symmetric with the skipNaturalLanguage a foreign command envelope sets.
-  // opencode's expanded /caveman-help card lists the commands and quotes the
-  // triggers; its prose ("Activate caveman" once the backtick span is blanked)
-  // must not switch the mode. Checked before every trigger, deactivation too.
-  if (options.expandedTpl && /^show the caveman quick-reference card\b/.test(prompt)) return null;
 
   const naturalLanguage = !options.skipNaturalLanguage && !prompt.startsWith('/');
   const nlPrompt = naturalLanguage ? prompt.replace(QUOTED_SPAN_REGEX, ' ') : '';
@@ -306,7 +302,7 @@ function parseModeChange(promptRaw, options) {
 
   // Match /caveman commands. Marketplace plugin installs surface commands
   // namespaced as /caveman:caveman-<name> — accept both forms for every
-  // skill (#599: only compress and stats had the namespaced variant).
+  // skill (#599: only compress had the namespaced variant).
   const parts = prompt.split(/\s+/);
   const cmd = parts[0]; // /caveman, /ultracave, /caveman-commit, etc.
   if (Object.prototype.hasOwnProperty.call(MODE_COMMANDS, cmd)) {

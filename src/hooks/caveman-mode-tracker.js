@@ -5,7 +5,6 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { execFileSync } = require('child_process');
 // caveman-config.js and caveman-parse.js are mandatory siblings, but an
 // incomplete install leaves one absent. A bare top-level require turns that
 // into an uncaught MODULE_NOT_FOUND on EVERY prompt, which the harness
@@ -159,7 +158,7 @@ function handle(raw) {
     // lightweight scheduled task would answer with a caveman greeting
     // instead of doing its job. Claude Code wraps these in a
     // <scheduled-task ...> marker; bail out completely when present: no flag
-    // mutation, no reinforcement, no stats. Interactive sessions are
+    // mutation, no reinforcement. Interactive sessions are
     // unaffected.
     if (/<scheduled-task\b/.test(prompt)) return;
 
@@ -187,54 +186,6 @@ function handle(raw) {
       } else {
         skipNaturalLanguage = true;
       }
-    }
-
-    // /caveman-stats [--share] — run the stats script and inject its output
-    // as additionalContext (#618), instructing the model to relay it
-    // verbatim. The script reads the active session log, so we pass
-    // transcript_path through when Claude Code provides it.
-    const statsMatch = /^\/caveman(?::caveman)?-stats(?:\s+(.*))?$/.exec(prompt);
-    if (statsMatch) {
-      const tailArgs = (statsMatch[1] || '').trim().split(/\s+/).filter(Boolean);
-      // Resolved once, outside the try, because the failure message needs it
-      // too. A hardcoded `hooks/caveman-stats.js` is only real for a standalone
-      // install rooted at $CLAUDE_CONFIG_DIR — a plugin user has no such
-      // directory to run it from (#789).
-      const statsPath = path.join(__dirname, 'caveman-stats.js');
-      let block;
-      try {
-        const argv = [statsPath];
-        argv.push('--host', 'claude');
-        if (data.transcript_path) argv.push('--session-file', data.transcript_path);
-        // Lets stats drop mode-log rows belonging to other windows instead of
-        // joining them onto this session's timeline.
-        if (sessionId) argv.push('--session-id', sessionId);
-        if (tailArgs.includes('--share')) argv.push('--share');
-        if (tailArgs.includes('--all')) argv.push('--all');
-        const sinceIdx = tailArgs.indexOf('--since');
-        if (sinceIdx !== -1 && tailArgs[sinceIdx + 1]) {
-          argv.push('--since', tailArgs[sinceIdx + 1]);
-        }
-        // 2.5s. Hook registration allows 30s for slow Windows process startup,
-        // while this child watchdog still bounds optional context loading.
-        // already spent its own Node startup; giving the child the host's
-        // entire budget means the host kills the hook before the child's own
-        // timeout can fire and produce the fallback message. Windows process
-        // spawn is ~10x macOS before antivirus (#819), so the margin is real.
-        // windowsHide: Claude Code Desktop has no console of its own, so Windows
-        // would give this child a NEW console window on every prompt (#1214).
-        // Ignored on other platforms.
-        block = execFileSync(process.execPath, argv, { encoding: 'utf8', timeout: 2500, windowsHide: true }).trim();
-      } catch (e) {
-        block = 'caveman-stats: could not run stats script.\nTry manually: node ' + statsPath;
-      }
-      process.stdout.write(JSON.stringify({
-        hookSpecificOutput: {
-          hookEventName: "UserPromptSubmit",
-          additionalContext: 'Print this stats block verbatim inside a fenced code block. Say nothing else.\n\n' + block
-        }
-      }));
-      return;
     }
 
     // Shared mode-change parser (#602) — single source of truth with the

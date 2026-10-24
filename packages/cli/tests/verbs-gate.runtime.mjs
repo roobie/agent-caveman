@@ -78,14 +78,6 @@ test("gate does not flag the caveman persona prose or issuer-bound recovery surf
   assert.deepEqual(scanSkillBody("fx", clean, surfaces), []);
 });
 
-test("caveman-optimize keeps report-only profiles off SDK and raw-gateway recovery paths", () => {
-  const body = readFileSync(join(skillsDir, "caveman-optimize", "SKILL.md"), "utf8");
-  assert.match(body, /report_only_observations/);
-  assert.match(body, /Do not fall back to a raw gateway Cave Plan or a project API key/);
-  assert.doesNotMatch(body, /GET \$GATEWAY\/sdk\/v1\/ccr\/<handle>/);
-  assert.doesNotMatch(body, /recoveryHandle|cave\.compress/);
-});
-
 // --- process-level proof: compile.mjs itself fails closed on a bogus skill ---
 
 test("compile.mjs rejects a registered skill with a nonexistent command", () => {

@@ -66,7 +66,7 @@ function which(tool) {
   return result.stdout.trim();
 }
 
-for (const hookName of ['SessionStart', 'SubagentStart', 'UserPromptSubmit', 'SessionEnd']) {
+for (const hookName of ['SessionStart', 'SubagentStart', 'UserPromptSubmit']) {
   for (const shell of SHELLS) {
     // #489: Claude Code installs natively now, so node is not a given. Without
     // it every hook run errored ("node: not found", exit 127) on every session

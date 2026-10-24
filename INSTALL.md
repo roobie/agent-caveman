@@ -390,8 +390,7 @@ ls "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.caveman-sessions/"
 A window where you said "stop caveman" stores `off` and stays off — including
 across the automatic context compaction that happens in long sessions.
 
-Statusline should show `[CAVEMAN]` (orange) at the bottom of Claude Code. Usage is recorded when each session ends; savings remain unknown without a measured comparison. `caveman stats` shows the history.
-
+Statusline should show `[CAVEMAN]` (orange) at the bottom of Claude Code.
 ## Update
 
 **Claude Code.** The plugin is `caveman@caveman` — plugin name, then the
@@ -437,7 +436,7 @@ What it removes:
 
 - Native agent routing written by `caveman setup --install` / `caveman enable <agent>` — for Claude Code that is `ANTHROPIC_BASE_URL` and `_CLAUDE_CODE_ASSUME_FIRST_PARTY_BASE_URL` in `~/.claude/settings.json`, which is what makes [Claude Code Remote Control](docs/technical/agent-wrapping.md) unavailable while Caveman is routing. Restored from each agent's integration journal, so your own prior value comes back. Caveman never takes that route over from an endpoint of your own in the first place: if `ANTHROPIC_BASE_URL` already points somewhere that is not Caveman (DeepSeek, Z.ai, a corporate relay), `caveman enable claude` leaves Claude Code as is and says why. To route it through Caveman anyway, remove `ANTHROPIC_BASE_URL` and run `caveman enable claude` again.
 - Caveman hook entries from `$CLAUDE_CONFIG_DIR/settings.json` (default `~/.claude/`; matched by the substring `caveman`).
-- Hook files in `$CLAUDE_CONFIG_DIR/hooks/` (`caveman-activate.js`, `caveman-mode-tracker.js`, `caveman-parse.js`, `caveman-stats.js`, `caveman-config.js`, `cavecrew-model-overrides.js`, `caveman-statusline.{sh,ps1}`, plus the dir's `package.json` marker).
+- Hook files in `$CLAUDE_CONFIG_DIR/hooks/` (`caveman-activate.js`, `caveman-mode-tracker.js`, `caveman-parse.js`, `caveman-config.js`, `cavecrew-model-overrides.js`, `caveman-statusline.{sh,ps1}`, plus the dir's `package.json` marker).
 - The Claude Code plugin and the Gemini CLI extension (if installed).
 - The opencode native plugin (`~/.config/opencode/plugins/caveman/`, the `plugin` and `mcp.caveman-shrink` entries from `opencode.json`, our skill/agent/command files, the caveman block from `AGENTS.md`, and the opencode flag file).
 - The Codex SessionStart entry from `$CODEX_HOME/hooks.json` (default `~/.codex/`; other hooks, including the caveman CLI's own, stay) and the hook files under `$CODEX_HOME/caveman/`. The file goes away only if caveman's entry was all it held.
