@@ -9,7 +9,7 @@ If just want it to work, run the command below. If want to know what gets touche
 Same command on macOS, Linux, WSL, and Windows. Needs Node.js.
 
 ```bash
-npx --allow-git=root -y github:roobie/agent-caveman#v5.0.1
+npx --allow-git=root -y github:roobie/agent-caveman#v5.0.2
 ```
 
 This project never asks you to pipe a downloaded script into a shell. Package, skill, and hook downloads stay pinned to that release tag, never the moving `main` branch. Hook files are checked against a SHA-256 list from the same tag: that catches a broken or partial download, not a tag that was moved. If that list can't be fetched or any file fails it, no hook is installed and your settings stay as they were. Set `CAVEMAN_REF` only when intentionally testing another ref.
@@ -24,14 +24,14 @@ What it does:
 Want to preview before installing? Use `--dry-run`:
 
 ```bash
-npx --allow-git=root -y github:roobie/agent-caveman#v5.0.1 -- --dry-run
+npx --allow-git=root -y github:roobie/agent-caveman#v5.0.2 -- --dry-run
 ```
 
 ## Per-agent install
 
 If you want to install for one agent (or want to know exactly what command runs under the hood), use the table below. Every row also works as `--only <id>` to the unified installer.
 
-> **On npm 12 or newer, add `--allow-git=root` to any bare `npx -y github:...` command below.** npm 12 turns off git package fetches by default, so a plain `npx -y github:roobie/agent-caveman` stops with `npm error code EALLOWGIT`. The flag opts in just the one package you asked for: `npx --allow-git=root -y github:roobie/agent-caveman -- --only <id>`. Check with `npx --version`. Pin a release with `#v5.0.1`: `npx --allow-git=root -y github:roobie/agent-caveman#v5.0.1 -- --only <id>`.
+> **On npm 12 or newer, add `--allow-git=root` to any bare `npx -y github:...` command below.** npm 12 turns off git package fetches by default, so a plain `npx -y github:roobie/agent-caveman` stops with `npm error code EALLOWGIT`. The flag opts in just the one package you asked for: `npx --allow-git=root -y github:roobie/agent-caveman -- --only <id>`. Check with `npx --version`. Pin a release with `#v5.0.2`: `npx --allow-git=root -y github:roobie/agent-caveman#v5.0.2 -- --only <id>`.
 
 > **Choose the install scope your agent reads.** `-g` installs into the agent's user skill directory. Without it, skills belong to the current project. The unified installer uses user scope except for Replit, whose documented filesystem location is the project's `.agents/skills`. Run Replit's command from that project's Shell. Replit workspace-wide skills are managed in Workspace Settings.
 

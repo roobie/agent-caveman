@@ -25,7 +25,7 @@ function Install-Caveman {
 
   $ErrorActionPreference = "Stop"
   $Repo = "roobie/agent-caveman"
-  $PinnedRef = if ($env:CAVEMAN_REF) { $env:CAVEMAN_REF } else { "v5.0.1" }
+  $PinnedRef = if ($env:CAVEMAN_REF) { $env:CAVEMAN_REF } else { "v5.0.2" }
 
   # Require Node ≥18.
   $node = Get-Command node -ErrorAction SilentlyContinue
